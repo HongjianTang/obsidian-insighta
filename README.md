@@ -1,18 +1,18 @@
-# InsightA for Obsidian :bulb: :books:
+# InsightA Obsidian Plugin :bulb: :books:
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/HongjianTang/obsidian-insighta?style=for-the-badge)
 ![GitHub all releases](https://img.shields.io/github/downloads/HongjianTang/obsidian-insighta/total?style=for-the-badge)
 
 ## Overview :mag:
 
-InsightA is a powerful Obsidian plugin crafted to transform your long articles into concise, atomic notes. This tool is perfect for users who want to distill extensive information into digestible, manageable pieces within Obsidian. 🚀📝
+InsightA is a Obsidian plugin that transforms extensive articles into concise, atomic notes using LLM. This plugin is perfect for those looking to streamline complex information into organized notes, drawing inspiration from the Zettelkasten method. 🚀📝
 
 ## Features :sparkles:
 
-- **Efficient Note Extraction**: Automatically parse long articles to generate insightful, atomic notes.
-- **Customization Options**: Adapt the extraction process to fit your unique note-taking preferences.
-- **Obsidian-Friendly**: Seamlessly integrates with your existing Obsidian setup.
-- **User-Friendly Interface**: Designed for ease of use, regardless of your technical expertise.
+- **AI-Powered Note Extraction**: Converts lengthy articles into atomic notes using advanced AI techniques.
+- **Customizable Settings**: Tailor the plugin's functionality to fit your personal note-taking style.
+- **Seamless Obsidian Integration**: Works harmoniously within the Obsidian ecosystem.
+- **Intuitive User Interface**: Designed for simplicity and ease of use for all users.
 
 ## Installation :gear:
 
@@ -23,11 +23,17 @@ InsightA is a powerful Obsidian plugin crafted to transform your long articles i
 
 ## Usage 💡
 
-With InsightA installed, open any lengthy article in Obsidian. Click the `InsightA` icon in the toolbar or use the shortcut (default: `Ctrl+Shift+I`). The plugin will analyze the content and present you with neatly extracted atomic notes for further editing and organizing.
+To use InsightA, follow these steps:
+
+1. **Open Setting**: Select Folder for generated notes and setup OpenAI API.
+2. **Begin Extraction**: Open an article for processing. Click the `InsightA` icon in the toolbar or use the command. The plugin will process the article, creating atomic notes that include links back to the source note and a set of relevant tags for easy organization and reference.
+
+PS: Please note that processing times can vary depending on the length of the article. Typically, it takes about 30 seconds or longer for extensive articles.
+
 
 ## Contributing :raised_hands:
 
-Your contributions are what make the community amazing! If you have ideas, issues, or want to contribute, feel free to check the [issues page](#) or submit a pull request.
+Your contributions are what make the community amazing! If you have ideas, issues, or want to contribute, feel free to check the [issues page](https://github.com/HongjianTang/obsidian-insighta/issues) or submit a pull request.
 
 ## License :page_facing_up:
 
@@ -35,9 +41,10 @@ This project is under the [MIT License](LICENSE).
 
 ## Acknowledgements :tada:
 
-- A special thanks to the Obsidian community for their continuous support and insights.
-- InsightA is inspired by the concept of effective knowledge assimilation and the atomic note-taking methodology.
+- A huge thank you to the Obsidian community for their continuous support and insightful feedback.
+- This tool is inspired by the Zettelkasten method, renowned for its efficient approach to knowledge management and organization.
+- Special credits to [Liam's Periodic Notes Plugin](https://github.com/liamcain/obsidian-periodic-notes) and [HyeonseoNam's Auto Classifier](https://github.com/HyeonseoNam/auto-classifier/). Portions of their code were instrumental in the development of InsightA.
 
 ---
 
-Crafted with :heart: by [Hongjian Tang] for the Obsidian community.
+Crafted with :heart: by Hongjian Tang for the Obsidian community.
