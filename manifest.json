@@ -1,0 +1,10 @@
+{
+	"id": "insighta",
+	"name": "InsightA",
+	"version": "0.1.0",
+	"minAppVersion": "0.1.0",
+	"description": "InsightA is a powerful Obsidian plugin crafted to transform your long articles into concise, atomic notes. This tool is perfect for users who want to distill extensive information into digestible, manageable pieces within Obsidian. 🚀📝",
+	"author": "Hongjian Tang",
+	"authorUrl": "https://github.com/HongjianTang/obsidian-insighta",
+	"isDesktopOnly": false
+}

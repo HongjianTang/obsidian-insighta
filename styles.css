@@ -1,0 +1,115 @@
+h1 {
+    margin-top: 1.2em;
+}
+
+.setting-item-child {
+    background-color: var(--background-secondary);
+    padding-left: 1em;
+    padding-right: 1em;
+    border-top: 0.5px solid var(--background-primary);
+    /* animation: child-enter 0.3s ease; */
+}
+.setting-item-child textarea, .setting-item-child input {
+    background-color: var(--background-primary);
+}
+
+@keyframes child-enter {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.wide-text-area .setting-item-info, .wide-text-area .setting-item-description {
+    flex: 0.3 1 auto;
+}
+.block-control-item {
+    flex-direction: column;
+}
+
+.block-control-item .setting-item-control, .block-control-item .setting-item-info {
+    margin-top: 0.5em;
+    width: 100%;
+    margin-right: auto;
+}
+.height10-text-area textarea {
+    width: 100%;
+    height: 10em;
+}
+.height20-text-area textarea {
+    width: 100%;
+    height: 20em;
+}
+.height30-text-area textarea {
+    width: 100%;
+    height: 30em;
+}
+
+
+.loading-container {
+    display: flex;
+    align-items: center;
+  }
+  
+.loading-icon {
+    display: inline-block;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-left-color: var(--text-muted);
+    border-top-color: var(--text-accent);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+.checkmark-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .checkmark {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    margin-right: 8px;
+  }
+  
+  .checkmark:after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 3px;
+    background-color: var(--text-accent);
+    transform-origin: left top;
+    transform: rotate(45deg);
+    top: 8px;
+    left: 6px;
+  }
+  
+  .checkmark:before {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 3px;
+    background-color: var(--text-accent);
+    transform-origin: left bottom;
+    transform: rotate(-45deg);
+    bottom: 8px;
+    left: 11px;
+  }
