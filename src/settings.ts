@@ -47,7 +47,7 @@ export class InsightASettingTab extends PluginSettingTab {
         containerEl.empty();
 
         // ------- [Create Setting] -------
-        containerEl.createEl('h1', { text: 'Create Setting' });   
+        containerEl.createEl('h2', { text: 'Create setting' });   
         this.add_generated_notes_location();
         // Toggle Use Exist Tags
         // new Setting(containerEl)
@@ -66,13 +66,13 @@ export class InsightASettingTab extends PluginSettingTab {
 
         // ------- [API Setting] -------
         // API Key input
-        containerEl.createEl('h1', { text: 'LLM Setting' });
+        containerEl.createEl('h2', { text: 'LLM setting' });
         const apiKeySetting = new Setting(containerEl)
-            .setName('ChatGPT API Key')
+            .setName('OpenAI API key')
             .setDesc('')
             .addText((text) =>
                 text
-                    .setPlaceholder('API key')
+                    .setPlaceholder('OpenAI API key')
                     .setValue(this.plugin.settings.apiKey)
                     .onChange((value) => {
                         this.plugin.settings.apiKey = value;
@@ -114,8 +114,8 @@ export class InsightASettingTab extends PluginSettingTab {
 
         // Select LLM Model
         new Setting(containerEl)
-            .setName('LLM Model')
-            .setDesc('Specify LLM Model')
+            .setName('LLM model')
+            .setDesc('Specify LLM model')
             .addDropdown((cb) => {
                 cb.addOption('gpt-3.5-turbo', 'gpt-3.5-turbo')
                     .addOption('gpt-4-1106-preview', 'gpt-4-turbo')
@@ -128,7 +128,7 @@ export class InsightASettingTab extends PluginSettingTab {
             });
 
         // ------- [Custom Prompt] -------
-        containerEl.createEl('h1', { text: 'Custom Prompt' });   
+        containerEl.createEl('h2', { text: 'Custom prompt' });   
         // Different default template depanding on useRef
         if (commandOption.useRef) {
             if(commandOption.prompt_template == DEFAULT_PROMPT_TEMPLATE_WO_REF) commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE;
@@ -175,7 +175,7 @@ export class InsightASettingTab extends PluginSettingTab {
         // customPromptTemplateEl.descEl.createEl('br');
 
         const customChatRoleEl = new Setting(containerEl)
-            .setName('System Message')
+            .setName('System message')
             .setDesc('')
             .setClass('setting-item-child')
             .setClass('block-control-item')
