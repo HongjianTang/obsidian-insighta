@@ -22,25 +22,22 @@ jobs:
           npm run build
 
       - name: Fetch the latest draft release
-        id: get_draft_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           draft_release=$(gh release list --limit 1 --draft | cut -f3)
           echo "Draft release tag: $draft_release"
-          echo "::set-output name=tag::$draft_release"
+          echo "DRAFT_TAG=$draft_release" >> $GITHUB_ENV
 
       - name: Upload assets to the draft release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tag=${{ steps.get_draft_release.outputs.tag }}
-          gh release upload "$tag" main.js manifest.json styles.css
+          gh release upload "${{ env.DRAFT_TAG }}" main.js manifest.json styles.css
 
       - name: Update draft release (optional)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tag=${{ steps.get_draft_release.outputs.tag }}
-          gh release edit "$tag" \
+          gh release edit "${{ env.DRAFT_TAG }}" \
             --draft
