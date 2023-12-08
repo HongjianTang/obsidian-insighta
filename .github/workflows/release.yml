@@ -21,13 +21,20 @@ jobs:
           npm install
           npm run build
 
-      - name: Fetch the latest draft release
+      - name: Fetch the latest draft release tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           draft_release=$(gh release list --limit 1 --draft | cut -f3)
           echo "Draft release tag: $draft_release"
+          if [ -z "$draft_release" ]; then
+            echo "No draft release found. Exiting..."
+            exit 1
+          fi
           echo "DRAFT_TAG=$draft_release" >> $GITHUB_ENV
+
+      - name: Echo the draft release tag (for debugging)
+        run: echo "Using draft tag: ${{ env.DRAFT_TAG }}"
 
       - name: Upload assets to the draft release
         env:
@@ -35,9 +42,3 @@ jobs:
         run: |
           gh release upload "${{ env.DRAFT_TAG }}" main.js manifest.json styles.css
 
-      - name: Update draft release (optional)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release edit "${{ env.DRAFT_TAG }}" \
-            --draft
