@@ -100,12 +100,12 @@ export class InsightASettingTab extends PluginSettingTab {
                     apiTestMessageEl.setText('Testing api call...');
                     apiTestMessageEl.style.color = 'var(--text-normal)';
                     try {
-                        await ChatGPT.callAPI('', 'test', this.plugin.settings.apiKey);
+                        await ChatGPT.callAPI('', 'test', this.plugin.settings.apiKey, commandOption.llm_model);
                         apiTestMessageEl.setText('Success! API working.');
                         apiTestMessageEl.style.color = 'var(--success-color)';
                         this.plugin.settings.apiKeyCreatedAt = new Date();
                     } catch (error) {
-                        apiTestMessageEl.setText('Error: API is not working.');
+                        apiTestMessageEl.setText(`Error: API is not working. ${error}`);
                         apiTestMessageEl.style.color = 'var(--warning-color)';
                         this.plugin.settings.apiKeyCreatedAt = null;
                     }
