@@ -30,11 +30,17 @@ jobs:
           echo "Draft release tag: $draft_release"
           echo "::set-output name=tag::$draft_release"
 
-      - name: Update draft release
+      - name: Upload assets to the draft release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=${{ steps.get_draft_release.outputs.tag }}
+          gh release upload "$tag" main.js manifest.json styles.css
+
+      - name: Update draft release (optional)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag=${{ steps.get_draft_release.outputs.tag }}
           gh release edit "$tag" \
-            --add main.js manifest.json styles.css \
             --draft
