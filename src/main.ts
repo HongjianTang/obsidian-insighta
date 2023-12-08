@@ -108,7 +108,6 @@ export default class InsightAPlugin extends Plugin {
 		}
 
 		for (const note of noteArray){
-			// new Notice(JSON.stringify(note));
 			let processedTag = '';
 			for (let tag of note.tags){
 				tag = tag.replace(/ /g, "_")
