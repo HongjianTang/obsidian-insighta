@@ -34,11 +34,10 @@ jobs:
           echo "DRAFT_TAG=$draft_release" >> $GITHUB_ENV
 
       - name: Echo the draft release tag (for debugging)
-        run: echo "Using draft tag: ${{ env.DRAFT_TAG }}"
+        run: echo "Using draft tag: $DRAFT_TAG"
 
       - name: Upload assets to the draft release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ env.DRAFT_TAG }}" main.js manifest.json styles.css
-
+          gh release upload "$DRAFT_TAG" main.js manifest.json styles.css
