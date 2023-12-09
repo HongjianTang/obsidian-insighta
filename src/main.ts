@@ -100,16 +100,14 @@ export default class InsightAPlugin extends Plugin {
 			return null;
 		}
 
+		// ------- [LLM Processing] -------
 		// format prompt
 		let user_prompt = this.settings.commandOption.prompt_template;
 		user_prompt = user_prompt.replace('{{input}}', input);
-
 		const system_role = this.settings.commandOption.system_role;
 
-		// ------- [LLM Processing] -------
 		// Call API
-		let responseRaw = await ChatGPT.callAPI(system_role, user_prompt, this.settings.commandOption.llm_model);
-		let noteJsonString =  JSON.parse(responseRaw).choices[0].message.content;
+		let noteJsonString = await ChatGPT.callAPI(system_role, user_prompt, this.settings.commandOption.llm_model);
 		noteJsonString = noteJsonString.replace("```json", "");
 		noteJsonString = noteJsonString.replace("```", "");
 		noteJsonString = this.convertToJsonArray(noteJsonString);

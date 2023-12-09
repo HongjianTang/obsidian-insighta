@@ -48,7 +48,6 @@ export class ChatGPT {
 
 		new Notice(`Successful receieve message from ${model}.`);
 		const data = JSON.parse(response.text);
-		return response.text;
 		return data.choices[0].message.content;
 	}
 
