@@ -144,12 +144,11 @@ export default class InsightAPlugin extends Plugin {
 			return null
 		}
 
-		new Notice("Start update moc");
 		const markdownDirectory = 'Cards/';
 		const embeddingsDirectory = 'Embeddings/';
 		const relevantNotesFile = 'Nagivation/investment.md';
 	
-		// await this.embed.saveEmbeddings(markdownDirectory);
+		await this.embed.saveEmbeddings(markdownDirectory);
 		let topic = await this.viewManager.getTitle();
 		if (!topic){
 			new Notice("⛔ Can't get title");
@@ -157,6 +156,7 @@ export default class InsightAPlugin extends Plugin {
 		}
 		
 		await this.embed.searchRelatedNotes(topic, embeddingsDirectory, relevantNotesFile);
+		new Notice(`✅ ${this.manifest.name}: finish`);
 	}
 
 	// create loading spin in the Notice message

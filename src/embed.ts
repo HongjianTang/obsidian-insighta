@@ -27,12 +27,20 @@ export class Embed{
     async saveEmbeddings(directoryPath: string) {
         const files = app.vault.getFiles().filter(f => f.path.includes(directoryPath))
         new Notice(`Total files count: ${files.length}.`)
+
         for (const file of files) {
-            const fileContent = await app.vault.read(file);
-            // new Notice(fileContent);
-            const embedding = await this.embedText(fileContent);
-            const embeddingPath = `Embeddings/${file.basename}.json`;
-            this.app.vault.create(embeddingPath, JSON.stringify(embedding));
+            if (file.extension === 'md') {
+                const embeddingFilePath = `Embeddings/${file.basename}.json`;
+                const fileExist = await this.app.vault.adapter.exists(embeddingFilePath);
+                if (!fileExist) {
+                    new Notice(`Embed new file: ${file.basename}`);
+                    const content = await this.app.vault.read(file);
+                    const embedding = await this.embedText(content);
+                    await this.app.vault.adapter.write(embeddingFilePath, JSON.stringify(embedding));
+                } else {
+                    console.log(`Embedding already exists for ${file.name}, skipping...`);
+                }
+            }
         }
     }
 
