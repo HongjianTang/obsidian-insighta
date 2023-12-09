@@ -2,6 +2,7 @@ import { Plugin, Notice } from "obsidian";
 import { InsightASettingTab, InsightASettings, DEFAULT_SETTINGS} from "src/settings";
 import { ViewManager } from "src/view-manager";
 import { ChatGPT } from 'src/api';
+import { Embed } from 'src/embed';
 
 enum InputType {
 	SelectedArea,
@@ -11,6 +12,7 @@ enum InputType {
 export default class InsightAPlugin extends Plugin {
 	settings: InsightASettings;
 	viewManager = new ViewManager(this.app);
+	embed = new Embed(this.app,this.viewManager);
 
 	async onload() {
 		await this.loadSettings();
@@ -33,6 +35,14 @@ export default class InsightAPlugin extends Plugin {
 			name: 'Create atomic notes from Note Content',
 			callback: async () => {
 				await this.runExtractNotes(InputType.Content);
+			}
+		});
+
+		this.addCommand({
+			id: 'update-moc',
+			name: 'Update moc',
+			callback: async () => {
+				await this.updateMoc();
 			}
 		});
 
@@ -65,7 +75,7 @@ export default class InsightAPlugin extends Plugin {
 	// Main Classification
 	async extractNotes(inputType: InputType) {
 		// ------- [API Key check] -------
-		if (!this.settings.apiKey) {
+		if (!process.env.OPENAI_API_KEY) {
 			new Notice(`⛔ ${this.manifest.name}: You shuld input your API Key`);
 			return null
 		}
@@ -96,7 +106,7 @@ export default class InsightAPlugin extends Plugin {
 
 		// ------- [LLM Processing] -------
 		// Call API
-		let responseRaw = await ChatGPT.callAPI(system_role, user_prompt, this.settings.apiKey, this.settings.commandOption.llm_model);
+		let responseRaw = await ChatGPT.callAPI(system_role, user_prompt, this.settings.commandOption.llm_model);
 		let noteJsonString =  JSON.parse(responseRaw).choices[0].message.content;
 		noteJsonString = noteJsonString.replace("```json", "");
 		noteJsonString = noteJsonString.replace("```", "");
@@ -125,6 +135,28 @@ export default class InsightAPlugin extends Plugin {
 		}
 
 		new Notice(`✅ ${this.manifest.name}: finish`);
+	}
+
+	async updateMoc(){
+		// ------- [API Key check] -------
+		if (!process.env.OPENAI_API_KEY) {
+			new Notice(`⛔ ${this.manifest.name}: You shuld input your API Key`);
+			return null
+		}
+
+		new Notice("Start update moc");
+		const markdownDirectory = 'Cards/';
+		const embeddingsDirectory = 'Embeddings/';
+		const relevantNotesFile = 'Nagivation/investment.md';
+	
+		// await this.embed.saveEmbeddings(markdownDirectory);
+		let topic = await this.viewManager.getTitle();
+		if (!topic){
+			new Notice("⛔ Can't get title");
+			return;
+		}
+		
+		await this.embed.searchRelatedNotes(topic, embeddingsDirectory, relevantNotesFile);
 	}
 
 	// create loading spin in the Notice message

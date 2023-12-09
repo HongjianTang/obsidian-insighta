@@ -15,13 +15,11 @@ export interface CommandOption {
 }
 
 export class InsightASettings {
-    apiKey: string;
     apiKeyCreatedAt: Date | null;
     commandOption: CommandOption;
 }
 
 export const DEFAULT_SETTINGS: InsightASettings = {
-    apiKey: '',
     apiKeyCreatedAt: null,
     commandOption: {
         useRef: false,
@@ -73,9 +71,9 @@ export class InsightASettingTab extends PluginSettingTab {
             .addText((text) =>
                 text
                     .setPlaceholder('OpenAI API key')
-                    .setValue(this.plugin.settings.apiKey)
+                    .setValue(process.env.OPENAI_API_KEY!)
                     .onChange((value) => {
-                        this.plugin.settings.apiKey = value;
+                        process.env.OPENAI_API_KEY = value;
                         this.plugin.saveSettings();
                     })
             )
@@ -86,7 +84,7 @@ export class InsightASettingTab extends PluginSettingTab {
         apiKeySetting.descEl.appendChild(apiTestMessageEl);
 
         //API Key default message
-        if (this.plugin.settings.apiKey && this.plugin.settings.apiKeyCreatedAt) {
+        if (process.env.OPENAI_API_KEY && this.plugin.settings.apiKeyCreatedAt) {
             apiTestMessageEl.setText(`This key was tested at ${this.plugin.settings.apiKeyCreatedAt.toString()}`);
             apiTestMessageEl.style.color = 'var(--success-color)';
         }
@@ -100,7 +98,7 @@ export class InsightASettingTab extends PluginSettingTab {
                     apiTestMessageEl.setText('Testing api call...');
                     apiTestMessageEl.style.color = 'var(--text-normal)';
                     try {
-                        await ChatGPT.callAPI('', 'test', this.plugin.settings.apiKey, commandOption.llm_model);
+                        await ChatGPT.callAPI('', 'test', commandOption.llm_model);
                         apiTestMessageEl.setText('Success! API working.');
                         apiTestMessageEl.style.color = 'var(--success-color)';
                         this.plugin.settings.apiKeyCreatedAt = new Date();
