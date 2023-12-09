@@ -11,11 +11,13 @@ enum InputType {
 
 export default class InsightAPlugin extends Plugin {
 	settings: InsightASettings;
+	embed: Embed;
 	viewManager = new ViewManager(this.app);
-	embed = new Embed(this.app,this.viewManager);
+	
 
 	async onload() {
 		await this.loadSettings();
+		this.embed = new Embed(this.app,this.viewManager,this.settings);
 
 		// Buttons
 		const extractIconEl = this.addRibbonIcon('dice', `${this.manifest.name}: Extract Notes`, async (evt: MouseEvent) => {
@@ -144,18 +146,16 @@ export default class InsightAPlugin extends Plugin {
 			return null
 		}
 
-		const markdownDirectory = 'Cards/';
-		const embeddingsDirectory = 'Embeddings/';
-		const relevantNotesFile = 'Nagivation/investment.md';
+		const fileName = await this.viewManager.getTitle();
 	
-		await this.embed.saveEmbeddings(markdownDirectory);
+		await this.embed.saveEmbeddings();
 		let topic = await this.viewManager.getTitle();
 		if (!topic){
 			new Notice("⛔ Can't get title");
 			return;
 		}
 		
-		await this.embed.searchRelatedNotes(topic, embeddingsDirectory, relevantNotesFile);
+		await this.embed.searchRelatedNotes(topic, fileName!);
 		new Notice(`✅ ${this.manifest.name}: finish`);
 	}
 

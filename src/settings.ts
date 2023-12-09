@@ -12,6 +12,8 @@ export interface CommandOption {
     prompt_template: string;
     generated_notes_location: string;
     llm_model: string;
+    embedding_location: string;
+    source_notes_location: string;
 }
 
 export class InsightASettings {
@@ -27,6 +29,8 @@ export const DEFAULT_SETTINGS: InsightASettings = {
         prompt_template: DEFAULT_PROMPT_TEMPLATE,
         generated_notes_location: "Atomic Notes",
         llm_model: "gpt-3.5-turbo",
+        embedding_location: "Embeddings/",
+        source_notes_location: "Cards/",
     },
 };
 
@@ -45,8 +49,9 @@ export class InsightASettingTab extends PluginSettingTab {
         containerEl.empty();
 
         // ------- [Create Setting] -------
-        containerEl.createEl('h2', { text: 'Create setting' });   
+        containerEl.createEl('h2', { text: 'Create setting' });
         this.add_generated_notes_location();
+        
         // Toggle Use Exist Tags
         // new Setting(containerEl)
         // .setName('Use Exist Tags')
@@ -134,44 +139,6 @@ export class InsightASettingTab extends PluginSettingTab {
             if(commandOption.prompt_template == DEFAULT_PROMPT_TEMPLATE) commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE_WO_REF;
         }
 
-        // const customPromptTemplateEl = new Setting(containerEl)
-        //     .setName('Custom Prompt Template')
-        //     .setDesc('')
-        //     .setClass('setting-item-child')
-        //     .setClass('block-control-item')
-        //     .setClass('height10-text-area')
-        //     .addTextArea((text) =>
-        //         text
-        //             .setPlaceholder('Write custom prompt template.')
-        //             .setValue(commandOption.prompt_template)
-        //             .onChange(async (value) => {
-        //                 commandOption.prompt_template = value;
-        //                 await this.plugin.saveSettings();
-        //             })
-        //     )
-        //     .addExtraButton(cb => {
-        //         cb
-        //             .setIcon('reset')
-        //             .setTooltip('Restore to default')
-        //             .onClick(async () => {
-        //                 // Different default template depanding on useRef
-        //                 if (commandOption.useRef) commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE;
-        //                 else commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE_WO_REF;
-
-        //                 await this.plugin.saveSettings();
-        //                 this.display();
-        //             })
-        //     });
-        // customPromptTemplateEl.descEl.createSpan({text: 'This plugin is based on the ChatGPT answer.'});
-        // customPromptTemplateEl.descEl.createEl('br');
-        // customPromptTemplateEl.descEl.createSpan({text: 'You can use your own template when making a request to ChatGPT.'});
-        // customPromptTemplateEl.descEl.createEl('br');
-        // customPromptTemplateEl.descEl.createEl('br');
-        // customPromptTemplateEl.descEl.createSpan({text: 'Variables:'});
-        // customPromptTemplateEl.descEl.createEl('br');
-        // customPromptTemplateEl.descEl.createSpan({text: '- {{input}}: The text will be inserted here.'});
-        // customPromptTemplateEl.descEl.createEl('br');
-
         const customChatRoleEl = new Setting(containerEl)
             .setName('System message')
             .setDesc('')
@@ -199,7 +166,9 @@ export class InsightASettingTab extends PluginSettingTab {
             });
             customChatRoleEl.descEl.createSpan({text: 'Custom system message to LLM.'});
         
-        
+        containerEl.createEl('h2', { text: 'MOC setting' });
+        this.add_embedding_location();
+        this.add_source_notes_location();
     }
 
     add_generated_notes_location(): void {
@@ -217,5 +186,37 @@ export class InsightASettingTab extends PluginSettingTab {
                 // @ts-ignore
                 cb.containerEl.addClass("templater_search");
             });
+    }
+
+    add_embedding_location():void{
+        new Setting(this.containerEl)
+        .setName("Embedding files folder")
+        .setDesc("Embedding files folder.")
+        .addSearch((cb) => {
+            new FolderSuggest(cb.inputEl);
+            cb.setValue(this.plugin.settings.commandOption.embedding_location)
+                .onChange((new_folder) => {
+                    this.plugin.settings.commandOption.embedding_location = new_folder;
+                    this.plugin.saveSettingsInstant();
+                });
+            // @ts-ignore
+            cb.containerEl.addClass("templater_search");
+        });
+    }
+
+    add_source_notes_location():void{
+        new Setting(this.containerEl)
+        .setName("Source notes folder")
+        .setDesc("Source notes folder.")
+        .addSearch((cb) => {
+            new FolderSuggest(cb.inputEl);
+            cb.setValue(this.plugin.settings.commandOption.source_notes_location)
+                .onChange((new_folder) => {
+                    this.plugin.settings.commandOption.source_notes_location = new_folder;
+                    this.plugin.saveSettingsInstant();
+                });
+            // @ts-ignore
+            cb.containerEl.addClass("templater_search");
+        });
     }
 }

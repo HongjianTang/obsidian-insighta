@@ -1,16 +1,19 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { ChatGPT } from 'src/api';
-import { App, Notice } from "obsidian";
+import { App, Notice, Setting } from "obsidian";
 import { ViewManager } from "src/view-manager";
+import {InsightASettings} from "src/settings";
 
 export class Embed{
     app: App;
     viewManager: ViewManager;
+    setting: InsightASettings;
 
-    constructor(app: App, viewManager: ViewManager) {
+    constructor(app: App, viewManager: ViewManager, setting:InsightASettings) {
         this.app = app;
         this.viewManager = viewManager;
+        this.setting = setting;
     }
 
     async embedText(text: string): Promise<number[]> {
@@ -24,8 +27,8 @@ export class Embed{
         }
     }
 
-    async saveEmbeddings(directoryPath: string) {
-        const files = app.vault.getFiles().filter(f => f.path.includes(directoryPath))
+    async saveEmbeddings() {
+        const files = app.vault.getFiles().filter(f => f.path.includes(this.setting.commandOption.source_notes_location))
         new Notice(`Total files count: ${files.length}.`)
 
         for (const file of files) {
@@ -44,10 +47,10 @@ export class Embed{
         }
     }
 
-    async searchRelatedNotes(topic: string, embeddingsPath: string, outputFilePath: string) {
+    async searchRelatedNotes(topic: string, outputFilePath: string) {
         new Notice(topic);
         const queryEmbedding = await this.embedText(topic);
-        const embeddingFiles = app.vault.getFiles().filter(f => f.path.includes(embeddingsPath))
+        const embeddingFiles = app.vault.getFiles().filter(f => f.path.includes(this.setting.commandOption.embedding_location))
         const relevantFiles = [];
 
         for (const file of embeddingFiles) {
