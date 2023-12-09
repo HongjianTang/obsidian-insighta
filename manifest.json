@@ -1,7 +1,7 @@
 {
 	"id": "insighta",
 	"name": "InsightA",
-	"version": "1.0.1",
+	"version": "1.0.3",
 	"minAppVersion": "1.0.0",
 	"description": "InsightA is a Obsidian plugin that transforms extensive articles into concise, atomic notes using LLM. This plugin is perfect for those looking to streamline complex information into organized notes, drawing inspiration from the Zettelkasten method. 🚀📝",
 	"author": "Hongjian Tang",
