@@ -58,8 +58,8 @@ export class Embed{
             const embeddingJson = JSON.parse(fileContent);
             const embeddingArray: number[] = embeddingJson;
             const similarity = this.dotProduct(embeddingArray, queryEmbedding);
-            new Notice(`[[${file.name.replace('.json', 'md')}]], ${similarity}`);
-            if (similarity > 0.75) {
+            // new Notice(`[[${file.name.replace('.json', 'md')}]], ${similarity}`);
+            if (similarity > this.setting.commandOption.similar_threshold) {
                 relevantFiles.push(`[[${file.name.replace('.json', '')}]]`);
             }
         }

@@ -14,6 +14,7 @@ export interface CommandOption {
     llm_model: string;
     embedding_location: string;
     source_notes_location: string;
+    similar_threshold: number;
 }
 
 export class InsightASettings {
@@ -31,6 +32,7 @@ export const DEFAULT_SETTINGS: InsightASettings = {
         llm_model: "gpt-3.5-turbo",
         embedding_location: "Embeddings/",
         source_notes_location: "Cards/",
+        similar_threshold: 0.76,
     },
 };
 
@@ -169,6 +171,17 @@ export class InsightASettingTab extends PluginSettingTab {
         containerEl.createEl('h2', { text: 'MOC setting' });
         this.add_embedding_location();
         this.add_source_notes_location();
+        new Setting(containerEl)
+            .setName('Similar threshold for moc')
+            .setDesc('')
+            .addText((text) =>
+                text
+                    .setValue(`${commandOption.similar_threshold}`)
+                    .onChange((value) => {
+                        commandOption.similar_threshold = Number(value);
+                        this.plugin.saveSettings();
+                    })
+            )
     }
 
     add_generated_notes_location(): void {
