@@ -100,8 +100,9 @@ export default class InsightAPlugin extends Plugin {
 		let noteJsonString =  JSON.parse(responseRaw).choices[0].message.content;
 		noteJsonString = noteJsonString.replace("```json", "");
 		noteJsonString = noteJsonString.replace("```", "");
-		// new Notice(noteJsonString);
+		noteJsonString = this.convertToJsonArray(noteJsonString);
 		let noteArray = JSON.parse(noteJsonString);
+		new Notice(noteJsonString);
 		if (!Array.isArray(noteArray)) {
 			new Notice(`⛔ return json is not array`);
 			noteArray = [noteArray]
@@ -145,6 +146,29 @@ export default class InsightAPlugin extends Plugin {
 
 		return notice;
 	}
+
+	convertToJsonArray(str: string): string {
+		// Check if the string is already a valid JSON array
+		try {
+			JSON.parse(str);
+			return str; // It's already a valid JSON array
+		} catch (error) {
+			// Not a valid JSON array, proceed with conversion
+		}
+	
+		// Split the string by '}' and filter out empty elements
+		let parts = str.split('}').filter(part => part.trim() !== '');
+	
+		// Add the missing '}' back to each part and convert to JSON objects
+		let jsonParts = parts.map(part => {
+			try {
+				return JSON.parse(part + '}');
+			} catch (error) {
+				throw new Error("Invalid JSON format");
+			}
+		});
+	
+		// Convert the array of JSON objects to a JSON string
+		return JSON.stringify(jsonParts);
+	}
 }
-
-
