@@ -49,11 +49,11 @@ export class Embed{
             const similarity = this.dotProduct(embeddingArray, queryEmbedding);
             new Notice(`[[${file.name.replace('.json', 'md')}]], ${similarity}`);
             if (similarity > 0.75) {
-                relevantFiles.push(`[[${file.name.replace('.json', 'md')}]]`);
+                relevantFiles.push(`[[${file.name.replace('.json', '')}]]`);
             }
         }
 
-        const outputString = relevantFiles.join('\n');
+        const outputString = relevantFiles.join('\n\n');
         new Notice(outputString);
         this.viewManager.insertContentAtTop(outputString);
     }
