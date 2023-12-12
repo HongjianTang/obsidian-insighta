@@ -5,14 +5,13 @@
 
 ## Overview :mag:
 
-InsightA is a Obsidian plugin that transforms extensive articles into concise, atomic notes using LLM. This plugin is perfect for those looking to streamline complex information into organized notes, drawing inspiration from the Zettelkasten method. 🚀📝
+InsightA is an Obsidian plugin that not only transforms extensive articles into concise, atomic notes but also creates an organized Map of Content (MOC) using LLM technology. This tool is ideal for anyone aiming to distill complex information into structured, interconnected notes, drawing inspiration from the Zettelkasten method. 🚀📝
 
 ## Features :sparkles:
 
 - **AI-Powered Note Extraction**: Converts lengthy articles into atomic notes using advanced AI techniques.
-- **Customizable Settings**: Tailor the plugin's functionality to fit your personal note-taking style.
+- **Map of Content Generation**: Creates MOC based on note title, linking atomic notes for a better understanding of the subject matter.
 - **Seamless Obsidian Integration**: Works harmoniously within the Obsidian ecosystem.
-- **Intuitive User Interface**: Designed for simplicity and ease of use for all users.
 
 ## Installation :gear:
 
@@ -28,7 +27,7 @@ To use InsightA, follow these steps:
 1. **Open Setting**: Select Folder for generated notes and setup OpenAI API.
 2. **Begin Extraction**: Open an article for processing. Click the `InsightA` icon in the toolbar or use the command. The plugin will process the article, creating atomic notes that include links back to the source note and a set of relevant tags for easy organization and reference.
 
-PS: Please note that processing times can vary depending on the length of the article. Typically, it takes about 30 seconds or longer for extensive articles.
+PS: Please note that processing times can vary depending on the length of the article. Typically, it takes about 30 seconds or longer for extensive articles. And GPT-4 is much better than GPT-3.5.
 
 
 ## Contributing :raised_hands:
