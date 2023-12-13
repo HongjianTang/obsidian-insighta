@@ -51,7 +51,7 @@ export class InsightASettingTab extends PluginSettingTab {
         containerEl.empty();
 
         // ------- [Create Setting] -------
-        containerEl.createEl('h2', { text: 'Create setting' });
+        containerEl.createEl('h2', { text: 'Create atomic notes' });
         this.add_generated_notes_location();
         
         // Toggle Use Exist Tags
@@ -71,7 +71,7 @@ export class InsightASettingTab extends PluginSettingTab {
 
         // ------- [API Setting] -------
         // API Key input
-        containerEl.createEl('h2', { text: 'LLM setting' });
+        containerEl.createEl('h2', { text: 'LLM' });
         const apiKeySetting = new Setting(containerEl)
             .setName('OpenAI API key')
             .setDesc('')
@@ -168,7 +168,7 @@ export class InsightASettingTab extends PluginSettingTab {
             });
             customChatRoleEl.descEl.createSpan({text: 'Custom system message to LLM.'});
         
-        containerEl.createEl('h2', { text: 'MOC setting' });
+        containerEl.createEl('h2', { text: 'Create MOC' });
         this.add_embedding_location();
         this.add_source_notes_location();
         new Setting(containerEl)
