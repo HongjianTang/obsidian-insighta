@@ -20,9 +20,9 @@ export default class InsightAPlugin extends Plugin {
 		this.embed = new Embed(this.app,this.viewManager,this.settings);
 
 		// Buttons
-		const extractIconEl = this.addRibbonIcon('dice', `${this.manifest.name}: Extract Notes`, async (evt: MouseEvent) => {
-			await this.runExtractNotes(InputType.Content);
-		});
+		// const extractIconEl = this.addRibbonIcon('dice', `${this.manifest.name}: extract notes`, async (evt: MouseEvent) => {
+		// 	await this.runExtractNotes(InputType.Content);
+		// });
 
 		// Commands
 		this.addCommand({
