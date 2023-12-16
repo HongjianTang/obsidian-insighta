@@ -7,6 +7,7 @@ import { FolderSuggest } from "src/folder-suggester";
 
 // for tag, keyword
 export interface CommandOption {
+    openai_key: string;
     useRef: boolean;
     system_role: string;
     prompt_template: string;
@@ -25,6 +26,7 @@ export class InsightASettings {
 export const DEFAULT_SETTINGS: InsightASettings = {
     apiKeyCreatedAt: null,
     commandOption: {
+        openai_key: "",
         useRef: false,
         system_role: DEFAULT_CHAT_ROLE,
         prompt_template: DEFAULT_PROMPT_TEMPLATE,
@@ -78,8 +80,9 @@ export class InsightASettingTab extends PluginSettingTab {
             .addText((text) =>
                 text
                     .setPlaceholder('OpenAI API key')
-                    .setValue(process.env.OPENAI_API_KEY!)
+                    .setValue(commandOption.openai_key!)
                     .onChange((value) => {
+                        commandOption.openai_key = value;
                         process.env.OPENAI_API_KEY = value;
                         this.plugin.saveSettings();
                     })
@@ -91,7 +94,7 @@ export class InsightASettingTab extends PluginSettingTab {
         apiKeySetting.descEl.appendChild(apiTestMessageEl);
 
         //API Key default message
-        if (process.env.OPENAI_API_KEY && this.plugin.settings.apiKeyCreatedAt) {
+        if (commandOption.openai_key && this.plugin.settings.apiKeyCreatedAt) {
             apiTestMessageEl.setText(`This key was tested at ${this.plugin.settings.apiKeyCreatedAt.toString()}`);
             apiTestMessageEl.style.color = 'var(--success-color)';
         }

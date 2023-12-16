@@ -17,6 +17,7 @@ export default class InsightAPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
+		process.env.OPENAI_API_KEY = this.settings.commandOption.openai_key;
 		this.embed = new Embed(this.app,this.viewManager,this.settings);
 
 		// Buttons
