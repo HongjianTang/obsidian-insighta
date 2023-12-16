@@ -112,8 +112,8 @@ export default class InsightAPlugin extends Plugin {
 		noteJsonString = noteJsonString.replace("```json", "");
 		noteJsonString = noteJsonString.replace("```", "");
 		noteJsonString = this.convertToJsonArray(noteJsonString);
+		console.log(noteJsonString);
 		let noteArray = JSON.parse(noteJsonString);
-		new Notice(noteJsonString);
 		if (!Array.isArray(noteArray)) {
 			new Notice(`⛔ return json is not array`);
 			noteArray = [noteArray]
