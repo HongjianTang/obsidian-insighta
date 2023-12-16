@@ -109,10 +109,10 @@ export default class InsightAPlugin extends Plugin {
 
 		// Call API
 		let noteJsonString = await ChatGPT.callAPI(system_role, user_prompt, this.settings.commandOption.llm_model);
-		noteJsonString = noteJsonString.replace("```json", "");
-		noteJsonString = noteJsonString.replace("```", "");
-		noteJsonString = this.convertToJsonArray(noteJsonString);
-		console.log(noteJsonString);
+		noteJsonString = noteJsonString.replace(/```json/g, "");
+		noteJsonString = noteJsonString.replace(/```/g, "");
+		noteJsonString = this.convertToJsonArray(noteJsonString);	
+		console.log(`noteJsonString: ${noteJsonString}`);	
 		let noteArray = JSON.parse(noteJsonString);
 		if (!Array.isArray(noteArray)) {
 			new Notice(`⛔ return json is not array`);
@@ -189,7 +189,7 @@ export default class InsightAPlugin extends Plugin {
 	
 		// Split the string by '}' and filter out empty elements
 		let parts = str.split('}').filter(part => part.trim() !== '');
-	
+		
 		// Add the missing '}' back to each part and convert to JSON objects
 		let jsonParts = parts.map(part => {
 			try {
@@ -198,8 +198,14 @@ export default class InsightAPlugin extends Plugin {
 				throw new Error("Invalid JSON format");
 			}
 		});
-	
-		// Convert the array of JSON objects to a JSON string
-		return JSON.stringify(jsonParts);
+
+		try {
+			// Convert the array of JSON objects to a JSON string
+			return JSON.stringify(jsonParts);
+		} catch (error) {
+			new Notice("⛔ Invalid return result from LLM");
+		}
+
+		return str;
 	}
 }

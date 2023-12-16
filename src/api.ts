@@ -33,7 +33,7 @@ export class ChatGPT {
 			presence_penalty: presence_penalty
 		});
 
-		new Notice(`Sent message to ${model}.`);
+		console.log(`Sent message to ${model}. Message: ${body}`);
 		const response = await requestUrl({
 			url: this.baseUrl,
 			method: 'POST',
@@ -41,13 +41,17 @@ export class ChatGPT {
 			body: body,
 		});
 
+		
+		console.log(`Response status: ${response.status}.`);
+
 		if (response.status >= 400) {
 			new Notice(`API call error: ${response.status}`);
 			throw new Error(`API call error: ${response.status}`);
 		}
 
-		new Notice(`Successful receieve message from ${model}.`);
-		const data = JSON.parse(response.text);
+		console.log(`Successful receieve message from ${model}.`);
+		console.log(`Receive response: ${response.text}`);
+		const data = JSON.parse(response.text);		
 		return data.choices[0].message.content;
 	}
 
