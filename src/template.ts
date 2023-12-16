@@ -8,7 +8,7 @@ Step 2: Enhance each note to be self-contained and informative, with well-define
 
 Benchmark: The notes should capture the article's tone and succinctly represent its core content, with particular focus on the quantitative data. Each note must be standalone, comprehensive, and well-tagged.
 
-Additional Guidelines: Structure each note with a leading summary sentence, followed by detailed supporting data. The 'title' should succinctly capture the key theme of the note. The 'body' should elaborate on the summary with quantitative and thematic details. The 'tags' section should include 3 to 5 relevant keywords or phrases for categorization and thematic relevance.
+Additional Guidelines: Structure each note with a leading summary sentence, followed by detailed supporting data. The 'title' should succinctly capture the key theme of the note. The 'body' should elaborate on the summary with quantitative and thematic details. The 'tags' section should include 3 to 5 relevant keywords or phrases for categorization and thematic relevance. Avoid use _ in tags.
 Only return the final results.
 `;
 
