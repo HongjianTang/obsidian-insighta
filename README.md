@@ -22,13 +22,20 @@ InsightA is an Obsidian plugin that not only transforms extensive articles into 
 
 ## Usage 💡
 
-To use InsightA, follow these steps:
+Before using, open setting and setup OpenAI API.
 
-1. **Open Setting**: Select Folder for generated notes and setup OpenAI API.
-2. **Begin Extraction**: Open an article for processing. Click the `InsightA` icon in the toolbar or use the command. The plugin will process the article, creating atomic notes that include links back to the source note and a set of relevant tags for easy organization and reference.
-3. **Craete MOC**: Open a new note file, use Create MOC command. The plugin will embed all notes in specific folder and note title, then find all related notes to the note title, group found notes using LLM and show them.
+### Extract Notes
+
+Open an article for processing. Click the `InsightA` icon in the toolbar or use the command. The plugin will process the article, creating atomic notes that include links back to the source note and a set of relevant tags for easy organization and reference.
 
 ![Extract Notes](assets\use_case_extract_notes.gif)
+
+### Create MOC
+
+Open a new note file, use Create MOC command. The plugin will embed all notes in specific folder and note title, then find all related notes to the note title, group found notes using LLM and show them.
+You can modify similar threshold in setting.
+
+![Create MOC](assets\use_case_extract_notes.gif)
 
 PS: Please note that processing times can vary depending on the length of the article. Typically, it takes about 30 seconds or longer for extensive articles. And GPT-4 is much better than GPT-3.5.
 
