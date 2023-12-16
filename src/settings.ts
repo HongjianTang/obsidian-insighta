@@ -125,7 +125,7 @@ export class InsightASettingTab extends PluginSettingTab {
             .setName('LLM model')
             .setDesc('Specify LLM model')
             .addDropdown((cb) => {
-                cb.addOption('gpt-3.5-turbo', 'gpt-3.5-turbo')
+                cb.addOption('gpt-3.5-turbo-1106', 'gpt-3.5-turbo-1106')
                     .addOption('gpt-4-1106-preview', 'gpt-4-turbo')
                     .setValue(String(commandOption.llm_model))
                     .onChange(async (value) => {
