@@ -1,6 +1,6 @@
 {
 	"name": "insighta",
-	"version": "1.0.0",
+	"version": "1.0.5",
 	"description": "InsightA is a Obsidian plugin that transforms extensive articles into concise, atomic notes using LLM. This plugin is perfect for those looking to streamline complex information into organized notes, drawing inspiration from the Zettelkasten method. 🚀📝",
 	"main": "main.js",
 	"scripts": {
@@ -12,12 +12,15 @@
 	"author": "",
 	"license": "MIT",
 	"devDependencies": {
+		"@codemirror/state": "latest",
+		"@codemirror/view": "latest",
+		"@popperjs/core": "^2.11.6",
 		"@types/node": "^16.11.6",
 		"@typescript-eslint/eslint-plugin": "5.29.0",
 		"@typescript-eslint/parser": "5.29.0",
-		"@popperjs/core": "^2.11.6",
 		"builtin-modules": "3.3.0",
 		"esbuild": "0.17.3",
+		"eslint": "^8.56.0",
 		"obsidian": "latest",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"
