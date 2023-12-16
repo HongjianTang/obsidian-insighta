@@ -66,12 +66,14 @@ export class Embed{
 
         const outputString = relevantFiles.join('\n\n');
         // this.viewManager.insertContentAtTop(outputString);
-
+        
+        console.log(`Topic: ${topic}, Notes: ${outputString}`);
 		const user_prompt = `Topic: ${topic}, Notes: ${outputString}`;
 		const system_role = "Role: You're a skilled analyst in thematic organization and categorization. Instructions: Classify the provided notes into thematic groups and present them in a structured format. Steps:  Examine each notes. Categorize notes into distinct thematic groups. Each group should be represented by a Level 2 header that succinctly describes the overarching theme.        List the names of the notes under each theme, ensuring each note name starts with [[ and ends with ]]."
 
 		// Call API
 		let returnString = await ChatGPT.callAPI(system_role, user_prompt, this.setting.commandOption.llm_model);
+        console.log(returnString);
         this.viewManager.insertContentAtTop(returnString);
     }
 
