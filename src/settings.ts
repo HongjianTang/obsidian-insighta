@@ -52,28 +52,9 @@ export class InsightASettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        // ------- [Create Setting] -------
-        containerEl.createEl('h2', { text: 'Create atomic notes' });
-        this.add_generated_notes_location();
-        
-        // Toggle Use Exist Tags
-        // new Setting(containerEl)
-        // .setName('Use Exist Tags')
-        // .setDesc('If not, it will recommend new tags')
-        // .addToggle((toggle) =>
-        //     toggle
-        //         .setValue(commandOption.useRef)
-        //         .onChange(async (value) => {
-        //             commandOption.useRef = value;
-        //             await this.plugin.saveSettings();
-        //             this.display();
-        //         }),
-        // );
-        
-
-        // ------- [API Setting] -------
-        // API Key input
+        // ------- [LLM Setting] -------
         containerEl.createEl('h2', { text: 'LLM' });
+        // API Key input        
         const apiKeySetting = new Setting(containerEl)
             .setName('OpenAI API key')
             .setDesc('')
@@ -87,6 +68,7 @@ export class InsightASettingTab extends PluginSettingTab {
                         this.plugin.saveSettings();
                     })
             )
+
         // API Key Description & Message
         apiKeySetting.descEl.createSpan({text: 'Enter your ChatGPT API key. If you don\'t have one yet, you can create it at '});
         apiKeySetting.descEl.createEl('a', {href: 'https://platform.openai.com/account/api-keys', text: 'here'})
@@ -135,8 +117,28 @@ export class InsightASettingTab extends PluginSettingTab {
                     });
             });
 
+        // ------- [Create Setting] -------
+        containerEl.createEl('h2', { text: 'Create atomic notes' });
+        this.add_generated_notes_location();
+        
+        // Toggle Use Exist Tags
+        // new Setting(containerEl)
+        // .setName('Use Exist Tags')
+        // .setDesc('If not, it will recommend new tags')
+        // .addToggle((toggle) =>
+        //     toggle
+        //         .setValue(commandOption.useRef)
+        //         .onChange(async (value) => {
+        //             commandOption.useRef = value;
+        //             await this.plugin.saveSettings();
+        //             this.display();
+        //         }),
+        // );
+        
+
+
+
         // ------- [Custom Prompt] -------
-        containerEl.createEl('h2', { text: 'Custom prompt' });   
         // Different default template depanding on useRef
         if (commandOption.useRef) {
             if(commandOption.prompt_template == DEFAULT_PROMPT_TEMPLATE_WO_REF) commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE;
@@ -145,14 +147,14 @@ export class InsightASettingTab extends PluginSettingTab {
         }
 
         const customChatRoleEl = new Setting(containerEl)
-            .setName('System message')
+            .setName('Custom prompt')
             .setDesc('')
             .setClass('setting-item-child')
             .setClass('block-control-item')
             .setClass('height30-text-area')
             .addTextArea((text) =>
                 text
-                    .setPlaceholder('Write custom chat role for gpt system.')
+                    .setPlaceholder('Write custom prompt.')
                     .setValue(commandOption.system_role)
                     .onChange(async (value) => {
                         commandOption.system_role = value;
@@ -171,6 +173,7 @@ export class InsightASettingTab extends PluginSettingTab {
             });
             customChatRoleEl.descEl.createSpan({text: 'Custom system message to LLM.'});
         
+        // ------- [MOC] -------
         containerEl.createEl('h2', { text: 'Create MOC' });
         this.add_embedding_location();
         this.add_source_notes_location();
