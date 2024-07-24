@@ -11,7 +11,6 @@ InsightA is an Obsidian plugin, by using LLM, it can transform long articles int
 
 - **AI-Powered Note Extraction**: Converts lengthy articles into atomic notes using advanced AI techniques.
 - **Map of Content Generation**: Creates MOC based on note title, linking atomic notes for a better understanding of the subject matter.
-- **Seamless Obsidian Integration**: Works harmoniously within the Obsidian ecosystem.
 
 ## Installation :gear:
 
