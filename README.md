@@ -5,7 +5,7 @@
 
 ## Overview :mag:
 
-InsightA is an Obsidian plugin that not only transforms extensive articles into concise, atomic notes but also creates an organized Map of Content (MOC) using LLM technology. This tool is ideal for anyone aiming to distill complex information into structured, interconnected notes, drawing inspiration from the Zettelkasten method. 🚀📝
+InsightA is an Obsidian plugin, by using LLM, it can transform long articles into concise, atomic notes, and create well-organized Map of Content (MOC). This tool is ideal for anyone aiming to distill complex information into structured, interconnected notes, drawing inspiration from the Zettelkasten method. 🚀📝
 
 ## Features :sparkles:
 
@@ -39,6 +39,13 @@ You can modify similar threshold in setting.
 
 PS: Please note that processing times can vary depending on the length of the article. Typically, it takes about 30 seconds or longer for extensive articles. And GPT-4 is much better than GPT-3.5.
 
+## To do :hammer_and_wrench:
+
+- [ ] Select different LLM model
+- [ ] Note Extraction: set number of generated notes
+- [ ] Note Extraction: set number of tags
+- [ ] MOC: Modify similar threshold
+- [ ] New feature: extract journals into well-organized tables
 
 ## Contributing :raised_hands:
 
