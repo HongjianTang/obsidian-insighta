@@ -34,7 +34,7 @@ Open an article for processing. Click the `InsightA` icon in the toolbar or use 
 Open a new note file, use Create MOC command. The plugin will embed all notes in specific folder and note title, then find all related notes to the note title, group found notes using LLM and show them.
 You can modify similar threshold in setting.
 
-![image](https://github.com/user-attachments/assets/fbaa2fd5-4222-4cd4-8e69-1c36b3e61b65)
+https://github.com/user-attachments/assets/c6480f4c-29a1-4d47-b3d5-ef2dbaad72f1
 
 PS: Please note that processing times can vary depending on the length of the article. Typically, it takes about 30 seconds or longer for extensive articles. And GPT-4 is much better than GPT-3.5.
 
