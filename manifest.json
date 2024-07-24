@@ -1,7 +1,7 @@
 {
 	"id": "insighta",
 	"name": "InsightA",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"minAppVersion": "1.0.0",
 	"description": "InsightA can transform extensive articles into concise, atomic notes and generate MOC based on note title using LLM. 🚀📝",
 	"author": "Hongjian Tang",
