@@ -169,7 +169,7 @@ export class InsightASettingTab extends PluginSettingTab {
                     .setValue(this.plugin.settings.commandOption.generated_notes_location)
                     .onChange((new_folder) => {
                         this.plugin.settings.commandOption.generated_notes_location = new_folder;
-                        this.plugin.saveSettingsInstant();
+                        this.plugin.saveSettingsNow();
                     });
                 // @ts-ignore
                 cb.containerEl.addClass("templater_search");
@@ -235,7 +235,7 @@ export class InsightASettingTab extends PluginSettingTab {
                 cb.setValue(this.plugin.settings.commandOption.embedding_location)
                     .onChange((new_folder) => {
                         this.plugin.settings.commandOption.embedding_location = new_folder;
-                        this.plugin.saveSettingsInstant();
+                        this.plugin.saveSettingsNow();
                     });
                 // @ts-ignore
                 cb.containerEl.addClass("templater_search");
@@ -251,7 +251,7 @@ export class InsightASettingTab extends PluginSettingTab {
                 cb.setValue(this.plugin.settings.commandOption.source_notes_location)
                     .onChange((new_folder) => {
                         this.plugin.settings.commandOption.source_notes_location = new_folder;
-                        this.plugin.saveSettingsInstant();
+                        this.plugin.saveSettingsNow();
                     });
                 // @ts-ignore
                 cb.containerEl.addClass("templater_search");
