@@ -1,7 +1,7 @@
 import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 import { ChatGPT } from 'src/api';
 import type InsightAPlugin from "src/main";
-import { DEFAULT_CHAT_ROLE, DEFAULT_PROMPT_TEMPLATE, DEFAULT_PROMPT_TEMPLATE_WO_REF } from 'src/template'
+import { DEFAULT_CHAT_ROLE, DEFAULT_PROMPT_TEMPLATE } from 'src/template'
 import { FolderSuggest } from "src/folder-suggester";
 
 // for tag, keyword
@@ -19,6 +19,7 @@ export interface CommandOption {
     tags_quantity: string;
     language_option: string;
     specific_language: string;
+    additional_properties: string;
 }
 
 export class InsightASettings {
@@ -42,6 +43,7 @@ export const DEFAULT_SETTINGS: InsightASettings = {
         tags_quantity: "2-3",
         language_option: "same",
         specific_language: "",
+        additional_properties: "",
     },
 };
 
@@ -61,6 +63,7 @@ export class InsightASettingTab extends PluginSettingTab {
         this.createNotesQuantitySetting(containerEl);
         this.createTagsQuantitySetting(containerEl);
         this.createLanguageOptionSetting(containerEl);
+        this.createAdditionalPropertiesSetting(containerEl);
         this.createCustomPromptSettings(containerEl);
         this.createMOCSettings(containerEl);
     }
@@ -176,7 +179,6 @@ export class InsightASettingTab extends PluginSettingTab {
     createCustomPromptSettings(containerEl: HTMLElement): void {
         const commandOption = this.plugin.settings.commandOption;
         containerEl.createEl('h2', { text: 'Custom prompt' });
-        this.updatePromptTemplateBasedOnUseRef();
 
         const customChatRoleEl = new Setting(containerEl)
             .setName('Custom prompt')
@@ -204,19 +206,6 @@ export class InsightASettingTab extends PluginSettingTab {
                     })
             });
         customChatRoleEl.descEl.createSpan({ text: 'Custom system message to LLM.' });
-    }
-
-    updatePromptTemplateBasedOnUseRef(): void {
-        const commandOption = this.plugin.settings.commandOption;
-        if (commandOption.useRef) {
-            if (commandOption.prompt_template === DEFAULT_PROMPT_TEMPLATE_WO_REF) {
-                commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE;
-            }
-        } else {
-            if (commandOption.prompt_template === DEFAULT_PROMPT_TEMPLATE) {
-                commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE_WO_REF;
-            }
-        }
     }
 
     updateCustomPrompt(value: string): void {
@@ -295,7 +284,6 @@ export class InsightASettingTab extends PluginSettingTab {
                 cb.setValue(commandOption.notes_quantity)
                     .onChange(async (value) => {
                         commandOption.notes_quantity = value;
-                        commandOption.system_role = commandOption.system_role.replace(/\bnumber of notes: \d+\b/, `number of notes: ${value}`);
                         await this.plugin.saveSettings();
                     });
             });
@@ -313,7 +301,6 @@ export class InsightASettingTab extends PluginSettingTab {
                 cb.setValue(commandOption.tags_quantity)
                     .onChange(async (value) => {
                         commandOption.tags_quantity = value;
-                        commandOption.system_role = commandOption.system_role.replace(/\bnumber of tags: \d+-\d+\b/, `number of tags: ${value}`);
                         await this.plugin.saveSettings();
                     });
             });
@@ -347,10 +334,25 @@ export class InsightASettingTab extends PluginSettingTab {
                         .setValue(commandOption.specific_language)
                         .onChange(async (value) => {
                             commandOption.specific_language = value;
-                            commandOption.system_role = commandOption.system_role.replace(/\blanguage: \w+\b/, `language: ${value}`);
                             await this.plugin.saveSettings();
                         })
                 );
         }
+    }
+
+    createAdditionalPropertiesSetting(containerEl: HTMLElement): void {
+        const commandOption = this.plugin.settings.commandOption;
+        new Setting(containerEl)
+            .setName('Additional properties')
+            .setDesc('Specify additional properties like aliases, description, next, prev (comma separated)')
+            .addText((text) =>
+                text
+                    .setPlaceholder('e.g., aliases, description, next, prev')
+                    .setValue(commandOption.additional_properties)
+                    .onChange(async (value) => {
+                        commandOption.additional_properties = value;
+                        await this.plugin.saveSettings();
+                    })
+            );
     }
 }

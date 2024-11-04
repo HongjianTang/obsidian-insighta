@@ -17,17 +17,17 @@ interface ModelConfig {
 	embeddingUrl: string;
 }
 
-const modelMapping: { [key: string]: string } = {
-	"gpt-4o-mini": "openai",
-	"gpt-4o": "openai",
-	"glm-4-flash": "glm",
-	"glm-4-plus": "glm",
-	"llama-2": "llama",
-	"bard": "bard",
-	"claude": "claude"
-};
-
 class APIService {
+	private static modelMapping: { [key: string]: string } = {
+		"gpt-4o-mini": "openai",
+		"gpt-4o": "openai",
+		"glm-4-flash": "glm",
+		"glm-4-plus": "glm",
+		"llama-2": "llama",
+		"bard": "bard",
+		"claude": "claude"
+	};
+
 	private static modelConfigs: { [key: string]: ModelConfig } = {
 		"openai": {
 			chatUrl: 'https://api.openai.com/v1/chat/completions',
@@ -52,7 +52,7 @@ class APIService {
 	};
 
 	static async request(url: string, headers: any, body: string): Promise<any> {
-		console.log(`Sending request to ${url}.`);
+		console.log(`Sending request to ${url}.`);		
 		const response = await requestUrl({
 			url: url,
 			method: 'POST',
@@ -76,7 +76,7 @@ class APIService {
 	}
 
 	static getBaseUrl(model: string, type: "chat" | "embedding"): string {
-		const provider = modelMapping[model] || "openai";
+		const provider = this.modelMapping[model] || "openai";
 		const config = this.modelConfigs[provider];
 		return type === "chat" ? config.chatUrl : config.embeddingUrl;
 	}
@@ -135,6 +135,7 @@ export class ChatGPT {
 			frequencyPenalty: frequency_penalty,
 			presencePenalty: presence_penalty,
 		});
+		console.log(`Sent message: ${body}`);
 
 		const url = APIService.getBaseUrl(model, "chat");
 		const data = await APIService.request(url, headers, body);
