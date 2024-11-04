@@ -38,12 +38,13 @@ https://github.com/user-attachments/assets/c6480f4c-29a1-4d47-b3d5-ef2dbaad72f1
 
 PS: Please note that processing times can vary depending on the length of the article. Typically, it takes about 30 seconds or longer for extensive articles. And GPT-4 is much better than GPT-3.5.
 
-## To do :hammer_and_wrench:
+## Rodamap :hammer_and_wrench:
 
-- [ ] Select different LLM model
-- [ ] Note Extraction: set number of generated notes
-- [ ] Note Extraction: set number of tags
-- [ ] MOC: Modify similar threshold
+- [x] Select different LLM model
+- [x] Note Extraction: set number of generated notes
+- [x] Note Extraction: set number of tags
+- [x] Note Extraction: control the language of generated notes, with options for source or specific language input.
+- [x] MOC: Modify similar threshold
 - [ ] New feature: extract journals into well-organized tables
 
 ## Contributing :raised_hands:
