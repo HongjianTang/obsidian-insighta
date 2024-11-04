@@ -3,31 +3,37 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/HongjianTang/obsidian-insighta?style=for-the-badge)
 ![GitHub all releases](https://img.shields.io/github/downloads/HongjianTang/obsidian-insighta/total?style=for-the-badge)
 
-## Overview :mag:
+## Overview 🔍
 
-InsightA is an Obsidian plugin, by using LLM, it can transform long articles into concise, atomic notes, and create well-organized Map of Content (MOC). This tool is ideal for anyone aiming to distill complex information into structured, interconnected notes, drawing inspiration from the Zettelkasten method. 🚀📝
+InsightA uses AI to transform long articles into concise, atomic notes and generates organized Maps of Content (MOC). Ideal for structuring complex information inspired by the Zettelkasten method. 🚀📝
 
-## Features :sparkles:
+## Features ✨
 
-- **AI-Powered Note Extraction**: Converts lengthy articles into atomic notes using advanced AI techniques.
-- **Map of Content Generation**: Creates MOC based on note title, linking atomic notes for a better understanding of the subject matter.
+- **AI-Powered Notes**: Breaks down articles into linked, atomic notes.
+- **Automatic MOC**: Creates well-organized Maps of Content for easy navigation.
 
-## Installation :gear:
+## Installation ⚙️
 
-1. Open Obsidian and navigate to `Settings`.
-2. In `Community Plugins`, turn off `Safe Mode`.
-3. Click on `Browse Community Plugins` and search for `InsightA`.
-4. Install and then enable InsightA in your community plugins list.
+1. Open Obsidian and go to `Settings`.
+2. Navigate to `Community Plugins` and disable `Safe Mode`.
+3. Click `Browse` and search for `InsightA`.
+4. Install and enable the plugin.
 
 ## Usage 💡
 
 Before using, open setting, select a LLM and setup an API key.
 
+![image](https://github.com/user-attachments/assets/0c44befb-9c8c-410a-b1de-02650d85585e)
+
 ### Extract Notes
 
-Open an article for processing. Click the `InsightA` icon in the toolbar or use the command. The plugin will process the article, creating atomic notes that include links back to the source note and a set of relevant tags for easy organization and reference.
+Open an article for processing. Click the `InsightA` icon in the toolbar or use the command (ctrl+P). The plugin will process the article, creating atomic notes that include links back to the source note and a set of relevant tags for easy organization and reference.
 
-![Extract Notes](assets/use_case_extract_notes.gif)
+[![Extract Notes](assets/use_case_extract_notes.gif)](https://github.com/user-attachments/assets/02c728fd-41c1-4de4-ba97-28ece76442bb)
+
+Customize options such as the number of notes, tags, language, and additional properties (e.g., year, location).
+
+![image](https://github.com/user-attachments/assets/bcf6c08b-3805-43be-8d9f-7537c2845cbc)
 
 ### Create MOC
 
@@ -36,18 +42,18 @@ You can modify similar threshold in setting.
 
 https://github.com/user-attachments/assets/c6480f4c-29a1-4d47-b3d5-ef2dbaad72f1
 
-PS: Please note that processing times can vary depending on the length of the article. Typically, it takes about 30 seconds or longer for extensive articles. And GPT-4 is much better than GPT-3.5.
+PS: Please note that processing times can vary depending on the length of the article. Typically, it takes about 30 seconds or longer for extensive articles.
 
 ## Rodamap :hammer_and_wrench:
 
 - [x] Model: Select different LLM model
+- [ ] Model: add support to local LLM
 - [x] Note Extraction: set number of generated notes
 - [x] Note Extraction: set number of tags
 - [x] Note Extraction: control the language of generated notes, with options for source or specific language input.
-- [x] MOC: Modify similar threshold
-- [ ] Model: add support to local LLM
+- [x] Note Extraction: user can ask for additional properties like year, location, author
 - [ ] Note Extraction: let LLM decide how many notes should craete
-- [x] Note Extraction: user can ask for additional properties like aliases, description, next and prev
+- [x] MOC: Modify similar threshold
 - [ ] New feature: extract journals into well-organized tables
 
 ## Contributing :raised_hands:
