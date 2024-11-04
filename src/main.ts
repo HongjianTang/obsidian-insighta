@@ -160,7 +160,16 @@ export default class InsightAPlugin extends Plugin {
 	}
 
 	private buildNoteContent(note: any, title: string, tags: string): string {
-		return `---\nsource: "[[${title}]]"\ntags: ${tags}\n---\n${note.body}`;
+		let content = `---\nsource: "[[${title}]]"\ntags: ${tags}\n`;
+		if (note.properties) {
+			for (const [key, value] of Object.entries(note.properties)) {
+				if (value !== null) {
+					content += `${key}: ${Array.isArray(value) ? JSON.stringify(value) : value}\n`;
+				}
+			}
+		}
+		content += `---\n${note.body}`;
+		return content;
 	}
 
 	private async updateMapOfContent() {
