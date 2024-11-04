@@ -63,7 +63,7 @@ export class InsightASettingTab extends PluginSettingTab {
         this.createNotesQuantitySetting(containerEl);
         this.createTagsQuantitySetting(containerEl);
         this.createLanguageOptionSetting(containerEl);
-        this.createAdditionalPropertiesSetting(containerEl);
+        this.createPropertiesSetting(containerEl);
         this.createCustomPromptSettings(containerEl);
         this.createMOCSettings(containerEl);
     }
@@ -340,11 +340,11 @@ export class InsightASettingTab extends PluginSettingTab {
         }
     }
 
-    createAdditionalPropertiesSetting(containerEl: HTMLElement): void {
+    createPropertiesSetting(containerEl: HTMLElement): void {
         const commandOption = this.plugin.settings.commandOption;
         new Setting(containerEl)
             .setName('Additional properties')
-            .setDesc('Specify additional properties like aliases, description, next, prev (comma separated)')
+            .setDesc('Specify properties like aliases, description, next, prev (comma separated)')
             .addText((text) =>
                 text
                     .setPlaceholder('e.g., aliases, description, next, prev')
