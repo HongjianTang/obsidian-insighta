@@ -40,11 +40,14 @@ PS: Please note that processing times can vary depending on the length of the ar
 
 ## Rodamap :hammer_and_wrench:
 
-- [x] Select different LLM model
+- [x] Model: Select different LLM model
 - [x] Note Extraction: set number of generated notes
 - [x] Note Extraction: set number of tags
 - [x] Note Extraction: control the language of generated notes, with options for source or specific language input.
 - [x] MOC: Modify similar threshold
+- [ ] Model: add support to local LLM
+- [ ] Note Extraction: let LLM decide how many notes should craete
+- [ ] Note Extraction: user can ask for additional properties like aliases, description, next and prev
 - [ ] New feature: extract journals into well-organized tables
 
 ## Contributing :raised_hands:
