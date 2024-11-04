@@ -15,6 +15,8 @@ export interface CommandOption {
     embedding_location: string;
     source_notes_location: string;
     similar_threshold: number;
+    notes_quantity: string;
+    tags_quantity: string;
 }
 
 export class InsightASettings {
@@ -34,6 +36,8 @@ export const DEFAULT_SETTINGS: InsightASettings = {
         embedding_location: "Embeddings/",
         source_notes_location: "Cards/",
         similar_threshold: 0.76,
+        notes_quantity: "1",
+        tags_quantity: "2-3",
     },
 };
 
@@ -50,6 +54,8 @@ export class InsightASettingTab extends PluginSettingTab {
 
         this.createLLMSettings(containerEl);
         this.createAtomicNotesSettings(containerEl);
+        this.createNotesQuantitySetting(containerEl);
+        this.createTagsQuantitySetting(containerEl);
         this.createCustomPromptSettings(containerEl);
         this.createMOCSettings(containerEl);
     }
@@ -269,5 +275,42 @@ export class InsightASettingTab extends PluginSettingTab {
                         this.plugin.saveSettings();
                     })
             );
+    }
+
+    createNotesQuantitySetting(containerEl: HTMLElement): void {
+        const commandOption = this.plugin.settings.commandOption;
+        new Setting(containerEl)
+            .setName('Number of notes to generate')
+            .setDesc('Choose how many notes are generated')
+            .addDropdown((cb) => {
+                cb.addOption('1', '1');
+                cb.addOption('around 3', 'around 3');
+                cb.addOption('around 5', 'around 5');
+                cb.addOption('around 8', 'around 8');
+                cb.setValue(commandOption.notes_quantity)
+                    .onChange(async (value) => {
+                        commandOption.notes_quantity = value;
+                        commandOption.system_role = commandOption.system_role.replace(/\bnumber of notes: \d+\b/, `number of notes: ${value}`);
+                        await this.plugin.saveSettings();
+                    });
+            });
+    }
+
+    createTagsQuantitySetting(containerEl: HTMLElement): void {
+        const commandOption = this.plugin.settings.commandOption;
+        new Setting(containerEl)
+            .setName('Number of tags per note')
+            .setDesc('Choose how many tags each note should have')
+            .addDropdown((cb) => {
+                cb.addOption('0', '0');
+                cb.addOption('2-3', '2-3');
+                cb.addOption('5-8', '5-8');
+                cb.setValue(commandOption.tags_quantity)
+                    .onChange(async (value) => {
+                        commandOption.tags_quantity = value;
+                        commandOption.system_role = commandOption.system_role.replace(/\bnumber of tags: \d+-\d+\b/, `number of tags: ${value}`);
+                        await this.plugin.saveSettings();
+                    });
+            });
     }
 }
