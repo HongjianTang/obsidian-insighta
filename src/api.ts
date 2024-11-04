@@ -19,13 +19,25 @@ interface ModelConfig {
 
 class APIService {
 	private static modelConfigs: { [key: string]: ModelConfig } = {
+		"openai": {
+			chatUrl: 'https://api.openai.com/v1/chat/completions',
+			embeddingUrl: 'https://api.openai.com/v1/embeddings'
+		},
 		"glm": {
 			chatUrl: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
 			embeddingUrl: 'https://open.bigmodel.cn/api/paas/v4/embeddings'
 		},
-		"openai": {
-			chatUrl: 'https://api.openai.com/v1/chat/completions',
-			embeddingUrl: 'https://api.openai.com/v1/embeddings'
+		"bard": {
+			chatUrl: 'https://bard.google.com/api/v1/chat/completions',
+			embeddingUrl: 'https://bard.google.com/api/v1/embeddings'
+		},
+		"claude": {
+			chatUrl: 'https://api.anthropic.com/v1/completions',
+			embeddingUrl: 'https://api.anthropic.com/v1/embeddings'
+		},
+		"llama": {
+			chatUrl: 'https://api.llama.ai/v1/chat/completions',
+			embeddingUrl: 'https://api.llama.ai/v1/embeddings'
 		}
 	};
 
@@ -54,7 +66,7 @@ class APIService {
 	}
 
 	static getBaseUrl(model: string, type: "chat" | "embedding"): string {
-		const provider = model.includes("openai") ? "openai" : "glm";
+		const provider = Object.keys(this.modelConfigs).find(key => model.includes(key)) || "glm";
 		const config = this.modelConfigs[provider];
 		return type === "chat" ? config.chatUrl : config.embeddingUrl;
 	}
@@ -96,7 +108,7 @@ export class ChatGPT {
 	static async callAPI(
 		system_role: string,
 		user_prompt: string,
-		model: string = ChatGPT.defaultModel,
+		model: string,
 		temperature = 0,
 		max_tokens = 3000,
 		top_p = 0.95,
@@ -122,11 +134,11 @@ export class ChatGPT {
 		return data.choices[0].message.content;
 	}
 
-	static async createEmbedding(input: string): Promise<number[]> {
+	static async createEmbedding(input: string, model: string): Promise<number[]> {
 		const headers = this.getHeaders();
-		const body = this.buildEmbeddingRequestBody({ model: ChatGPT.defaultModel + "-embedding", input: input });
+		const body = this.buildEmbeddingRequestBody({ model: model, input: input });
 
-		const url = APIService.getBaseUrl(ChatGPT.defaultModel, "embedding");
+		const url = APIService.getBaseUrl(model, "embedding");
 		const data = await APIService.request(url, headers, body);
 
 		if (!data.data || data.data.length === 0 || !data.data[0].embedding) {
