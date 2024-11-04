@@ -118,7 +118,10 @@ export class InsightASettingTab extends PluginSettingTab {
             { value: 'gpt-4o-mini', label: 'gpt-4o-mini' },
             { value: 'gpt-4', label: 'gpt-4' },
             { value: 'glm-4-flash', label: 'glm-4-flash' },
+            { value: 'glm-4-plus', label: 'glm-4-plus' },
             { value: 'llama-2', label: 'llama-2' },
+            { value: 'bard', label: 'Bard' },
+            { value: 'claude', label: 'Claude' },
         ];
 
         new Setting(containerEl)
