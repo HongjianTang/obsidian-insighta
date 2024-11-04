@@ -18,7 +18,7 @@ export class Embed {
 
 	async embedText(text: string): Promise<number[]> {
 		try {
-			const response = await ChatGPT.createEmbedding(text);
+			const response = await ChatGPT.createEmbedding(text, this.setting.commandOption.llm_model);
 			console.log(`Embedding ${text} with result: ${response}`);
 			// new Notice(JSON.stringify(response));
 			return response;
