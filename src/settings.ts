@@ -34,7 +34,7 @@ export const DEFAULT_SETTINGS: InsightASettings = {
         useRef: false,
         system_role: DEFAULT_CHAT_ROLE,
         prompt_template: DEFAULT_PROMPT_TEMPLATE,
-        generated_notes_location: "Atomic Notes",
+        generated_notes_location: "Notes/",
         llm_model: "gpt-4o-mini",
         embedding_location: "Embeddings/",
         source_notes_location: "Cards/",
@@ -59,7 +59,7 @@ export class InsightASettingTab extends PluginSettingTab {
         containerEl.empty();
 
         this.createLLMSettings(containerEl);
-        this.createAtomicNotesSettings(containerEl);
+        this.createNotesSettings(containerEl);
         this.createNotesQuantitySetting(containerEl);
         this.createTagsQuantitySetting(containerEl);
         this.createLanguageOptionSetting(containerEl);
@@ -154,8 +154,8 @@ export class InsightASettingTab extends PluginSettingTab {
             });
     }
 
-    createAtomicNotesSettings(containerEl: HTMLElement): void {
-        containerEl.createEl('h2', { text: 'Create atomic notes' });
+    createNotesSettings(containerEl: HTMLElement): void {
+        containerEl.createEl('h2', { text: 'Create notes' });
         this.addGeneratedNotesLocation(containerEl);
     }
 
