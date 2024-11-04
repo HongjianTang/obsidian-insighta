@@ -17,6 +17,16 @@ interface ModelConfig {
 	embeddingUrl: string;
 }
 
+const modelMapping: { [key: string]: string } = {
+	"gpt-4o-mini": "openai",
+	"gpt-4o": "openai",
+	"glm-4-flash": "glm",
+	"glm-4-plus": "glm",
+	"llama-2": "llama",
+	"bard": "bard",
+	"claude": "claude"
+};
+
 class APIService {
 	private static modelConfigs: { [key: string]: ModelConfig } = {
 		"openai": {
@@ -66,7 +76,7 @@ class APIService {
 	}
 
 	static getBaseUrl(model: string, type: "chat" | "embedding"): string {
-		const provider = Object.keys(this.modelConfigs).find(key => model.includes(key)) || "glm";
+		const provider = modelMapping[model] || "openai";
 		const config = this.modelConfigs[provider];
 		return type === "chat" ? config.chatUrl : config.embeddingUrl;
 	}
