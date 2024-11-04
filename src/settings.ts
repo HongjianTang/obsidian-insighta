@@ -103,10 +103,12 @@ export class InsightASettingTab extends PluginSettingTab {
             apiTestMessageEl.setText('Success! API working.');
             apiTestMessageEl.style.color = 'var(--success-color)';
             this.plugin.settings.apiKeyCreatedAt = new Date();
+            await this.plugin.saveSettings(); // Ensure this value is persisted
         } catch (error) {
             apiTestMessageEl.setText(`Error: API is not working. ${error}`);
             apiTestMessageEl.style.color = 'var(--warning-color)';
             this.plugin.settings.apiKeyCreatedAt = null;
+            await this.plugin.saveSettings(); // Ensure this value is persisted
         }
     }
 
