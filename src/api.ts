@@ -1,47 +1,43 @@
 import { requestUrl, Notice } from "obsidian";
-export class ChatGPT {
-	private static baseUrl = 'https://api.openai.com/v1/chat/completions';
-	private static embeddingsBaseUrl = 'https://api.openai.com/v1/embeddings';
 
-	static async callAPI(
-		system_role: string,
-		user_prompt: string,
-		model: string,
-		temperature = 0,
-		max_tokens = 3000,
-		top_p = 0.95,
-		frequency_penalty = 0,
-		presence_penalty = 0.5): Promise<string> {
+interface APIRequestParams {
+	systemRole?: string;
+	userPrompt?: string;
+	model: string;
+	temperature?: number;
+	maxTokens?: number;
+	topP?: number;
+	frequencyPenalty?: number;
+	presencePenalty?: number;
+	input?: string;
+}
 
-		const apiKey = process.env.OPENAI_API_KEY;
-		const headers = {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${apiKey}`,
-		};
+interface ModelConfig {
+	chatUrl: string;
+	embeddingUrl: string;
+}
 
-		const body = JSON.stringify({
-			model: model,
-			messages: [
-				{ "role": "system", "content": system_role },
-				{ "role": "user", "content": user_prompt },
-			],
-			n: 1,
-			stop: null,
-			temperature: temperature,
-			top_p: top_p,
-			frequency_penalty: frequency_penalty,
-			presence_penalty: presence_penalty
-		});
+class APIService {
+	private static modelConfigs: { [key: string]: ModelConfig } = {
+		"glm": {
+			chatUrl: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+			embeddingUrl: 'https://open.bigmodel.cn/api/paas/v4/embeddings'
+		},
+		"openai": {
+			chatUrl: 'https://api.openai.com/v1/chat/completions',
+			embeddingUrl: 'https://api.openai.com/v1/embeddings'
+		}
+	};
 
-		console.log(`Sent message to ${model}. Message: ${body}`);
+	static async request(url: string, headers: any, body: string): Promise<any> {
+		console.log(`Sending request to ${url}.`);
 		const response = await requestUrl({
-			url: this.baseUrl,
+			url: url,
 			method: 'POST',
 			headers: headers,
 			body: body,
 		});
 
-		
 		console.log(`Response status: ${response.status}.`);
 
 		if (response.status >= 400) {
@@ -49,46 +45,93 @@ export class ChatGPT {
 			throw new Error(`API call error: ${response.status}`);
 		}
 
-		console.log(`Successful receieve message from ${model}.`);
-		console.log(`Receive response: ${response.text}`);
-		const data = JSON.parse(response.text);		
+		console.log(`Received response: ${response.text}`);
+		const data = JSON.parse(response.text);
+		if (!data) {
+			throw new Error('Invalid response format');
+		}
+		return data;
+	}
+
+	static getBaseUrl(model: string, type: "chat" | "embedding"): string {
+		const provider = model.includes("openai") ? "openai" : "glm";
+		const config = this.modelConfigs[provider];
+		return type === "chat" ? config.chatUrl : config.embeddingUrl;
+	}
+}
+
+export class ChatGPT {
+	private static getHeaders(): any {
+		const apiKey = process.env.OPENAI_API_KEY;
+		if (!apiKey) {
+			throw new Error("API key is not defined in environment variables");
+		}
+		return {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${apiKey}`,
+		};
+	}
+
+	private static buildChatRequestBody(params: APIRequestParams): string {
+		return JSON.stringify({
+			model: params.model,
+			messages: [
+				{ "role": "system", "content": params.systemRole ?? "" },
+				{ "role": "user", "content": params.userPrompt ?? "" },
+			],
+			temperature: params.temperature ?? 0,
+			top_p: params.topP ?? 0.95,
+			frequency_penalty: params.frequencyPenalty ?? 0,
+			presence_penalty: params.presencePenalty ?? 0.5
+		});
+	}
+
+	private static buildEmbeddingRequestBody(params: APIRequestParams): string {
+		return JSON.stringify({
+			model: params.model,
+			input: params.input ?? "",
+		});
+	}
+
+	static async callAPI(
+		system_role: string,
+		user_prompt: string,
+		model: string = ChatGPT.defaultModel,
+		temperature = 0,
+		max_tokens = 3000,
+		top_p = 0.95,
+		frequency_penalty = 0,
+		presence_penalty = 0.5
+	): Promise<string> {
+		const headers = this.getHeaders();
+		const body = this.buildChatRequestBody({
+			systemRole: system_role,
+			userPrompt: user_prompt,
+			model: model,
+			temperature: temperature,
+			topP: top_p,
+			frequencyPenalty: frequency_penalty,
+			presencePenalty: presence_penalty,
+		});
+
+		const url = APIService.getBaseUrl(model, "chat");
+		const data = await APIService.request(url, headers, body);
+		if (!data.choices || data.choices.length === 0 || !data.choices[0].message) {
+			throw new Error('Invalid response structure for chat completions');
+		}
 		return data.choices[0].message.content;
 	}
 
 	static async createEmbedding(input: string): Promise<number[]> {
-		let apiKey = process.env.OPENAI_API_KEY;
-		let model = "text-embedding-ada-002";
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`,
-        };
+		const headers = this.getHeaders();
+		const body = this.buildEmbeddingRequestBody({ model: ChatGPT.defaultModel + "-embedding", input: input });
 
-        const body = JSON.stringify({
-            model: model,
-            input: input,
-        });
+		const url = APIService.getBaseUrl(ChatGPT.defaultModel, "embedding");
+		const data = await APIService.request(url, headers, body);
 
-        // new Notice(`Generating embedding for text.`);
-        const response = await requestUrl({
-            url: this.embeddingsBaseUrl,
-            method: 'POST',
-            headers: headers,
-            body: body,
-        });
-
-        if (response.status >= 400) {
-            new Notice(`API call error: ${response.status}`);
-            throw new Error(`API call error: ${response.status}`);
-        }
-
-        // new Notice(`Successfully received embedding.`);
-        const data = JSON.parse(response.text);
-
-        // Check if the response contains the expected data
-        if (data.data && data.data.length > 0 && data.data[0].embedding) {
-            return data.data[0].embedding;
-        } else {
-            throw new Error('Invalid response structure for embeddings');
-        }
-    }
+		if (!data.data || data.data.length === 0 || !data.data[0].embedding) {
+			throw new Error('Invalid response structure for embeddings');
+		}
+		return data.data[0].embedding;
+	}
 }
