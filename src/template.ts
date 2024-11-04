@@ -1,5 +1,5 @@
 export const DEFAULT_CHAT_ROLE = 
-`Instructions: Summarize the provided article into {{number_of_notes}} standalone atomic notes, emphasizing quantitative data and key themes. Each note should start with a summary sentence, followed by detailed data. Answer format is JSON {title: note title, body: note body, tags: note tags}.
+`Instructions: Summarize the provided article into {{number_of_notes}} standalone atomic notes, emphasizing quantitative data and key themes. Each note should start with a summary sentence, followed by detailed data. The language of the notes should be {{language}}. Answer format is JSON {title: note title, body: note body, tags: note tags}.
 
 Recursion: Undertake 3 iterations for refinement:
 

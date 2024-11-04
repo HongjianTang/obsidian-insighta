@@ -17,6 +17,8 @@ export interface CommandOption {
     similar_threshold: number;
     notes_quantity: string;
     tags_quantity: string;
+    language_option: string;
+    specific_language: string;
 }
 
 export class InsightASettings {
@@ -38,6 +40,8 @@ export const DEFAULT_SETTINGS: InsightASettings = {
         similar_threshold: 0.76,
         notes_quantity: "1",
         tags_quantity: "2-3",
+        language_option: "same",
+        specific_language: "",
     },
 };
 
@@ -56,6 +60,7 @@ export class InsightASettingTab extends PluginSettingTab {
         this.createAtomicNotesSettings(containerEl);
         this.createNotesQuantitySetting(containerEl);
         this.createTagsQuantitySetting(containerEl);
+        this.createLanguageOptionSetting(containerEl);
         this.createCustomPromptSettings(containerEl);
         this.createMOCSettings(containerEl);
     }
@@ -312,5 +317,40 @@ export class InsightASettingTab extends PluginSettingTab {
                         await this.plugin.saveSettings();
                     });
             });
+    }
+
+    createLanguageOptionSetting(containerEl: HTMLElement): void {
+        const commandOption = this.plugin.settings.commandOption;
+        const languageSetting = new Setting(containerEl)
+            .setName('Language of generated notes')
+            .setDesc('Choose the language for generated notes')
+            .addDropdown((cb) => {
+                cb.addOption('same', 'Same as source')
+                    .addOption('specific', 'Specific language')
+                    .setValue(commandOption.language_option)
+                    .onChange(async (value) => {
+                        commandOption.language_option = value;
+                        if (value === 'same') {
+                            commandOption.specific_language = '';
+                        }
+                        await this.plugin.saveSettings();
+                        this.display();
+                    });
+            });
+
+        if (commandOption.language_option === 'specific') {
+            new Setting(containerEl)
+                .setName('Specify language')
+                .addText((text) =>
+                    text
+                        .setPlaceholder('e.g., Spanish, French')
+                        .setValue(commandOption.specific_language)
+                        .onChange(async (value) => {
+                            commandOption.specific_language = value;
+                            commandOption.system_role = commandOption.system_role.replace(/\blanguage: \w+\b/, `language: ${value}`);
+                            await this.plugin.saveSettings();
+                        })
+                );
+        }
     }
 }
