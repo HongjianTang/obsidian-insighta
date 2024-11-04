@@ -21,7 +21,7 @@ InsightA is an Obsidian plugin, by using LLM, it can transform long articles int
 
 ## Usage 💡
 
-Before using, open setting and setup OpenAI API.
+Before using, open setting, select a LLM and setup an API key.
 
 ### Extract Notes
 
@@ -47,7 +47,7 @@ PS: Please note that processing times can vary depending on the length of the ar
 - [x] MOC: Modify similar threshold
 - [ ] Model: add support to local LLM
 - [ ] Note Extraction: let LLM decide how many notes should craete
-- [ ] Note Extraction: user can ask for additional properties like aliases, description, next and prev
+- [x] Note Extraction: user can ask for additional properties like aliases, description, next and prev
 - [ ] New feature: extract journals into well-organized tables
 
 ## Contributing :raised_hands:
