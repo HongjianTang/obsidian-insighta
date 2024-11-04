@@ -1,6 +1,6 @@
 import { Plugin, Notice } from "obsidian";
-import { InsightASettingTab, InsightASettings, DEFAULT_SETTINGS} from "src/settings";
-import { DEFAULT_PROMPT_TEMPLATE } from 'src/template'
+import { InsightASettingTab, InsightASettings, DEFAULT_SETTINGS } from "src/settings";
+import { DEFAULT_PROMPT_TEMPLATE } from 'src/template';
 import { ViewManager } from "src/view-manager";
 import { ChatGPT } from 'src/api';
 import { Embed } from 'src/embed';
@@ -14,166 +14,172 @@ export default class InsightAPlugin extends Plugin {
 	settings: InsightASettings;
 	embed: Embed;
 	viewManager = new ViewManager(this.app);
-	
 
 	async onload() {
 		await this.loadSettings();
 		process.env.OPENAI_API_KEY = this.settings.commandOption.openai_key;
-		this.embed = new Embed(this.app,this.viewManager,this.settings);
+		this.embed = new Embed(this.app, this.viewManager, this.settings);
 
-		// Buttons
-		// const extractIconEl = this.addRibbonIcon('dice', `${this.manifest.name}: extract notes`, async (evt: MouseEvent) => {
-		// 	await this.runExtractNotes(InputType.Content);
-		// });
-
-		// Commands
-		this.addCommand({
-			id: 'create-atomic-notes-selected',
-			name: 'Create atomic notes from Selected Area',
-			callback: async () => {
-				await this.runExtractNotes(InputType.SelectedArea);
-			}
-		});
-		this.addCommand({
-			id: 'create-atomic-notes-content',
-			name: 'Create atomic notes from Note Content',
-			callback: async () => {
-				await this.runExtractNotes(InputType.Content);
-			}
-		});
-
-		this.addCommand({
-			id: 'update-moc',
-			name: 'Update moc',
-			callback: async () => {
-				await this.updateMoc();
-			}
-		});
-
+		this.registerCommands();
 		this.addSettingTab(new InsightASettingTab(this.app, this));
 	}
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}
+
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+
 	saveSettingsInstant() {
 		this.saveData(this.settings);
 	}
 
-	async onunload() {
+	onunload() {}
+
+	private registerCommands() {
+		this.addCommand({
+			id: 'create-atomic-notes-selected',
+			name: 'Create atomic notes from Selected Area',
+			callback: () => this.runExtractNotes(InputType.SelectedArea)
+		});
+		this.addCommand({
+			id: 'create-atomic-notes-content',
+			name: 'Create atomic notes from Note Content',
+			callback: () => this.runExtractNotes(InputType.Content)
+		});
+		this.addCommand({
+			id: 'update-moc',
+			name: 'Update moc',
+			callback: () => this.updateMoc()
+		});
 	}
 
-	async runExtractNotes(inputType: InputType) {
+	private async runExtractNotes(inputType: InputType) {
 		const loadingNotice = this.createLoadingNotice(`${this.manifest.name}: Processing..`);
 		try {
 			await this.extractNotes(inputType);
-			loadingNotice.hide();
 		} catch (err) {
+			console.error(err);
+		} finally {
 			loadingNotice.hide();
 		}
 	}
 
-	// Main Classification
-	async extractNotes(inputType: InputType) {
-		// ------- [API Key check] -------
-		if (!process.env.OPENAI_API_KEY) {
-			new Notice(`⛔ ${this.manifest.name}: You shuld input your API Key`);
-			return null
+	private async extractNotes(inputType: InputType) {
+		if (!this.isApiKeyValid()) {
+			return;
 		}
 
-		// ------- [Input] -------
-		// Set Input 
-		let input: string | null = '';
-		if (inputType == InputType.SelectedArea) {
-			input = await this.viewManager.getSelection();
-		}
-		else if (inputType == InputType.Content) {
-			input = await this.viewManager.getContent();
+		const input = await this.getInput(inputType);
+		if (!input) {
+			new Notice(`⛔ ${this.manifest.name}: no input data`);
+			return;
 		}
 
 		const filename = await this.viewManager.getTitle();
+		const userPrompt = this.formatUserPrompt(input);
+		const systemPrompt = this.formatSystemPrompt();
 
-		// input error
-		if (!input) {
-			new Notice(`⛔ ${this.manifest.name}: no input data`);
-			return null;
+		try {
+			const noteArray = await this.getNotesFromApi(systemPrompt, userPrompt);
+			await this.createNotes(noteArray, filename);
+			new Notice(`✅ ${this.manifest.name}: finish`);
+		} catch (error) {
+			console.error(error);
+			new Notice(`⛔ ${this.manifest.name}: Failed to extract notes`);
 		}
-
-		// ------- [LLM Processing] -------
-		// format prompt
-		console.log(`prompt template: ${DEFAULT_PROMPT_TEMPLATE}`)
-		let user_prompt = DEFAULT_PROMPT_TEMPLATE;
-		user_prompt = user_prompt.replace('{{input}}', input);
-		const system_prompt = this.settings.commandOption.system_role;
-
-		const number_of_notes = this.settings.commandOption.notes_quantity;
-		const number_of_tags = this.settings.commandOption.tags_quantity;
-		const language_option = this.settings.commandOption.language_option;
-		const specific_language = this.settings.commandOption.specific_language;
-		const additional_properties = this.settings.commandOption.additional_properties;
-
-		const updatedSystemPrompt = system_prompt
-		  .replace(/{{number_of_notes}}/g, number_of_notes.toString())
-		  .replace(/{{number_of_tags}}/g, number_of_tags.toString())
-		  .replace(/{{language}}/g, language_option === 'specific' ? specific_language : language_option)
-		  .replace(/{{additional_properties}}/g, additional_properties);
-
-		// Call API
-		let noteJsonString = await ChatGPT.callAPI(updatedSystemPrompt, user_prompt, this.settings.commandOption.llm_model);
-		noteJsonString = noteJsonString.replace(/```json/g, "");
-		noteJsonString = noteJsonString.replace(/```/g, "");
-		noteJsonString = this.convertToJsonArray(noteJsonString);	
-		console.log(`noteJsonString: ${noteJsonString}`);	
-		let noteArray = JSON.parse(noteJsonString);
-		if (!Array.isArray(noteArray)) {
-			new Notice(`⛔ return json is not array`);
-			noteArray = [noteArray]
-		}
-
-		for (const note of noteArray){
-			let processedTag = '';
-			for (let tag of note.tags){
-				tag = tag.replace(/ /g, "_")
-				tag = tag.replace("#", "")
-				processedTag = processedTag + tag +', ';
-			}
-			if (processedTag.endsWith(', ')) {
-				processedTag = processedTag.slice(0, -2);
-			}
-			let noteContent = `---\nsource: "[[${filename}]]"\ntags: ${processedTag}\n---`
-			noteContent = noteContent + `\n${note.body}`
-			const notePath = this.settings.commandOption.generated_notes_location+`/${note.title}.md`;
-			this.app.vault.create(notePath, noteContent);
-		}
-
-		new Notice(`✅ ${this.manifest.name}: finish`);
 	}
 
-	async updateMoc(){
-		// ------- [API Key check] -------
+	private isApiKeyValid(): boolean {
 		if (!process.env.OPENAI_API_KEY) {
-			new Notice(`⛔ ${this.manifest.name}: You shuld input your API Key`);
-			return null
+			new Notice(`⛔ ${this.manifest.name}: You should input your API Key`);
+			return false;
+		}
+		return true;
+	}
+
+	private async getInput(inputType: InputType): Promise<string | null> {
+		if (inputType === InputType.SelectedArea) {
+			return await this.viewManager.getSelection();
+		} else if (inputType === InputType.Content) {
+			return await this.viewManager.getContent();
+		}
+		return null;
+	}
+
+	private formatUserPrompt(input: string): string {
+		let userPrompt = DEFAULT_PROMPT_TEMPLATE;
+		return userPrompt.replace('{{input}}', input);
+	}
+
+	private formatSystemPrompt(): string {
+		const { system_role, notes_quantity, tags_quantity, language_option, specific_language, additional_properties } = this.settings.commandOption;
+		return system_role
+			.replace(/{{number_of_notes}}/g, notes_quantity.toString())
+			.replace(/{{number_of_tags}}/g, tags_quantity.toString())
+			.replace(/{{language}}/g, language_option === 'specific' ? specific_language : language_option)
+			.replace(/{{additional_properties}}/g, additional_properties);
+	}
+
+	private async getNotesFromApi(systemPrompt: string, userPrompt: string): Promise<any[]> {
+		let noteJsonString = await ChatGPT.callAPI(systemPrompt, userPrompt, this.settings.commandOption.llm_model);
+		noteJsonString = noteJsonString.replace(/```json/g, "").replace(/```/g, "");
+		noteJsonString = this.convertToJsonArray(noteJsonString);
+		console.log(`noteJsonString: ${noteJsonString}`);
+		let noteArray;
+		try {
+			noteArray = JSON.parse(noteJsonString);
+		} catch (error) {
+			throw new Error("Invalid JSON format");
+		}
+		if (!Array.isArray(noteArray)) {
+			new Notice(`⛔ return json is not array`);
+			return [noteArray];
+		}
+		return noteArray;
+	}
+
+	private async createNotes(noteArray: any[], filename: string) {
+		for (const note of noteArray) {
+			const processedTags = this.processTags(note.tags);
+			const noteContent = this.generateNoteContent(note, filename, processedTags);
+			const notePath = `${this.settings.commandOption.generated_notes_location}/${note.title}.md`;
+			try {
+				await this.app.vault.create(notePath, noteContent);
+			} catch (error) {
+				console.error(`Failed to create note at ${notePath}:`, error);
+				new Notice(`⛔ Failed to create note: ${note.title}`);
+			}
+		}
+	}
+
+	private processTags(tags: string[]): string {
+		return tags.map(tag => tag.replace(/ /g, "_").replace("#", "")).join(', ');
+	}
+
+	private generateNoteContent(note: any, filename: string, tags: string): string {
+		return `---\nsource: "[[${filename}]]"\ntags: ${tags}\n---\n${note.body}`;
+	}
+
+	private async updateMoc() {
+		if (!this.isApiKeyValid()) {
+			return;
 		}
 
 		const fileName = await this.viewManager.getTitle();
-	
-		await this.embed.saveEmbeddings();
-		let topic = await this.viewManager.getTitle();
-		if (!topic){
+		if (!fileName) {
 			new Notice("⛔ Can't get title");
 			return;
 		}
-		
-		await this.embed.searchRelatedNotes(topic, fileName!);
+
+		await this.embed.saveEmbeddings();
+		await this.embed.searchRelatedNotes(fileName, fileName);
 		new Notice(`✅ ${this.manifest.name}: finish`);
 	}
 
-	// create loading spin in the Notice message
-	createLoadingNotice(text: string, number = 100000): Notice {
+	private createLoadingNotice(text: string, number = 100000): Notice {
 		const notice = new Notice('', number);
 		const loadingContainer = document.createElement('div');
 		loadingContainer.addClass('loading-container');
@@ -192,19 +198,15 @@ export default class InsightAPlugin extends Plugin {
 		return notice;
 	}
 
-	convertToJsonArray(str: string): string {
-		// Check if the string is already a valid JSON array
+	private convertToJsonArray(str: string): string {
 		try {
 			JSON.parse(str);
-			return str; // It's already a valid JSON array
+			return str;
 		} catch (error) {
 			// Not a valid JSON array, proceed with conversion
 		}
-	
-		// Split the string by '}' and filter out empty elements
+
 		let parts = str.split('}').filter(part => part.trim() !== '');
-		
-		// Add the missing '}' back to each part and convert to JSON objects
 		let jsonParts = parts.map(part => {
 			try {
 				return JSON.parse(part + '}');
@@ -214,12 +216,10 @@ export default class InsightAPlugin extends Plugin {
 		});
 
 		try {
-			// Convert the array of JSON objects to a JSON string
 			return JSON.stringify(jsonParts);
 		} catch (error) {
 			new Notice("⛔ Invalid return result from LLM");
+			throw new Error("Invalid JSON format");
 		}
-
-		return str;
 	}
 }
