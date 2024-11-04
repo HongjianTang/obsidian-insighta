@@ -63,7 +63,7 @@ export class InsightASettingTab extends PluginSettingTab {
     createAPIKeySetting(containerEl: HTMLElement): void {
         const commandOption = this.plugin.settings.commandOption;
         const apiKeySetting = new Setting(containerEl)
-            .setName('OpenAI API key')
+            .setName('API key')
             .addText((text) =>
                 text
                     .setPlaceholder('OpenAI API key')
@@ -116,7 +116,7 @@ export class InsightASettingTab extends PluginSettingTab {
         const commandOption = this.plugin.settings.commandOption;
         const availableModels = [
             { value: 'gpt-4o-mini', label: 'gpt-4o-mini' },
-            { value: 'gpt-4', label: 'gpt-4' },
+            { value: 'gpt-4o', label: 'gpt-4o' },
             { value: 'glm-4-flash', label: 'glm-4-flash' },
             { value: 'glm-4-plus', label: 'glm-4-plus' },
             { value: 'llama-2', label: 'llama-2' },
