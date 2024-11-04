@@ -4,7 +4,6 @@ import type InsightAPlugin from "src/main";
 import { DEFAULT_CHAT_ROLE, DEFAULT_PROMPT_TEMPLATE, DEFAULT_PROMPT_TEMPLATE_WO_REF } from 'src/template'
 import { FolderSuggest } from "src/folder-suggester";
 
-
 // for tag, keyword
 export interface CommandOption {
     openai_key: string;
@@ -46,105 +45,122 @@ export class InsightASettingTab extends PluginSettingTab {
     }
 
     async display(): Promise<void> {
-
         const { containerEl } = this;
-        const commandOption = this.plugin.settings.commandOption;
-
         containerEl.empty();
 
-        // ------- [LLM Setting] -------
+        this.createLLMSettings(containerEl);
+        this.createAtomicNotesSettings(containerEl);
+        this.createCustomPromptSettings(containerEl);
+        this.createMOCSettings(containerEl);
+    }
+
+    createLLMSettings(containerEl: HTMLElement): void {
         containerEl.createEl('h2', { text: 'LLM' });
-        // API Key input        
+        this.createAPIKeySetting(containerEl);
+        this.createLLMModelSetting(containerEl);
+    }
+
+    createAPIKeySetting(containerEl: HTMLElement): void {
+        const commandOption = this.plugin.settings.commandOption;
         const apiKeySetting = new Setting(containerEl)
             .setName('OpenAI API key')
-            .setDesc('')
             .addText((text) =>
                 text
                     .setPlaceholder('OpenAI API key')
                     .setValue(commandOption.openai_key!)
-                    .onChange((value) => {
-                        commandOption.openai_key = value;
-                        process.env.OPENAI_API_KEY = value;
-                        this.plugin.saveSettings();
-                    })
-            )
+                    .onChange((value) => this.updateAPIKey(value))
+            );
 
-        // API Key Description & Message
-        apiKeySetting.descEl.createSpan({text: 'Enter your ChatGPT API key. If you don\'t have one yet, you can create it at '});
-        apiKeySetting.descEl.createEl('a', {href: 'https://platform.openai.com/account/api-keys', text: 'here'})
+        apiKeySetting.descEl.createSpan({ text: 'Enter your ChatGPT API key. If you don\'t have one yet, you can create it at ' });
+        apiKeySetting.descEl.createEl('a', { href: 'https://platform.openai.com/account/api-keys', text: 'here' });
         const apiTestMessageEl = document.createElement('div');
         apiKeySetting.descEl.appendChild(apiTestMessageEl);
 
-        //API Key default message
         if (commandOption.openai_key && this.plugin.settings.apiKeyCreatedAt) {
             apiTestMessageEl.setText(`This key was tested at ${this.plugin.settings.apiKeyCreatedAt.toString()}`);
             apiTestMessageEl.style.color = 'var(--success-color)';
         }
 
-        // API Key test button
         apiKeySetting.addButton((cb) => {
             cb.setButtonText('Test API call')
                 .setCta()
-                .onClick(async () => {
-                    this.plugin.settings.apiKeyCreatedAt
-                    apiTestMessageEl.setText('Testing api call...');
-                    apiTestMessageEl.style.color = 'var(--text-normal)';
-                    try {
-                        await ChatGPT.callAPI('', 'test', commandOption.llm_model);
-                        apiTestMessageEl.setText('Success! API working.');
-                        apiTestMessageEl.style.color = 'var(--success-color)';
-                        this.plugin.settings.apiKeyCreatedAt = new Date();
-                    } catch (error) {
-                        apiTestMessageEl.setText(`Error: API is not working. ${error}`);
-                        apiTestMessageEl.style.color = 'var(--warning-color)';
-                        this.plugin.settings.apiKeyCreatedAt = null;
-                    }
-                });
+                .onClick(() => this.testAPIKey(apiTestMessageEl));
         });
+    }
 
-        // Select LLM Model
+    updateAPIKey(value: string): void {
+        this.plugin.settings.commandOption.openai_key = value;
+        process.env.OPENAI_API_KEY = value;
+        this.plugin.saveSettings();
+    }
+
+    async testAPIKey(apiTestMessageEl: HTMLElement): Promise<void> {
+        const commandOption = this.plugin.settings.commandOption;
+        apiTestMessageEl.setText('Testing api call...');
+        apiTestMessageEl.style.color = 'var(--text-normal)';
+        try {
+            await ChatGPT.callAPI('', 'test', commandOption.llm_model);
+            apiTestMessageEl.setText('Success! API working.');
+            apiTestMessageEl.style.color = 'var(--success-color)';
+            this.plugin.settings.apiKeyCreatedAt = new Date();
+        } catch (error) {
+            apiTestMessageEl.setText(`Error: API is not working. ${error}`);
+            apiTestMessageEl.style.color = 'var(--warning-color)';
+            this.plugin.settings.apiKeyCreatedAt = null;
+        }
+    }
+
+    createLLMModelSetting(containerEl: HTMLElement): void {
+        const commandOption = this.plugin.settings.commandOption;
+        const availableModels = [
+            { value: 'gpt-4o-mini', label: 'gpt-4o-mini' },
+            { value: 'gpt-4', label: 'gpt-4' },
+            { value: 'glm-4-air', label: 'glm-4-air' },
+            { value: 'llama-2', label: 'llama-2' },
+        ];
+
         new Setting(containerEl)
             .setName('LLM model')
             .setDesc('Specify LLM model')
             .addDropdown((cb) => {
-                cb.addOption('gpt-3.5-turbo-1106', 'gpt-3.5-turbo-1106')
-                    .addOption('gpt-4-1106-preview', 'gpt-4-turbo')
-                    .setValue(String(commandOption.llm_model))
+                availableModels.forEach(model => {
+                    cb.addOption(model.value, model.label);
+                });
+                cb.setValue(String(commandOption.llm_model))
                     .onChange(async (value) => {
                         commandOption.llm_model = value;
                         await this.plugin.saveSettings();
                         this.display();
                     });
             });
+    }
 
-        // ------- [Create Setting] -------
+    createAtomicNotesSettings(containerEl: HTMLElement): void {
         containerEl.createEl('h2', { text: 'Create atomic notes' });
-        this.add_generated_notes_location();
-        
-        // Toggle Use Exist Tags
-        // new Setting(containerEl)
-        // .setName('Use Exist Tags')
-        // .setDesc('If not, it will recommend new tags')
-        // .addToggle((toggle) =>
-        //     toggle
-        //         .setValue(commandOption.useRef)
-        //         .onChange(async (value) => {
-        //             commandOption.useRef = value;
-        //             await this.plugin.saveSettings();
-        //             this.display();
-        //         }),
-        // );
-        
+        this.addGeneratedNotesLocation(containerEl);
+    }
 
+    addGeneratedNotesLocation(containerEl: HTMLElement): void {
+        new Setting(containerEl)
+            .setName("Generated notes folder")
+            .setDesc("Generated notes folder.")
+            .addSearch((cb) => {
+                new FolderSuggest(cb.inputEl);
+                cb.setPlaceholder("Example: folder1/folder2")
+                    .setValue(this.plugin.settings.commandOption.generated_notes_location)
+                    .onChange((new_folder) => {
+                        this.plugin.settings.commandOption.generated_notes_location = new_folder;
+                        this.plugin.saveSettingsInstant();
+                    });
+                // @ts-ignore
+                cb.containerEl.addClass("templater_search");
+            });
+    }
 
-
-        // ------- [Custom Prompt] -------
-        // Different default template depanding on useRef
-        if (commandOption.useRef) {
-            if(commandOption.prompt_template == DEFAULT_PROMPT_TEMPLATE_WO_REF) commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE;
-        } else {
-            if(commandOption.prompt_template == DEFAULT_PROMPT_TEMPLATE) commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE_WO_REF;
-        }
+    createCustomPromptSettings(containerEl: HTMLElement): void {
+        const commandOption = this.plugin.settings.commandOption;
+        containerEl.createEl('h2', { text: 'Custom prompt' });
+        this.updatePromptTemplateBasedOnUseRef();
 
         const customChatRoleEl = new Setting(containerEl)
             .setName('Custom prompt')
@@ -171,35 +187,49 @@ export class InsightASettingTab extends PluginSettingTab {
                         this.display();
                     })
             });
-            customChatRoleEl.descEl.createSpan({text: 'Custom system message to LLM.'});
-        
-        // ------- [MOC] -------
-        containerEl.createEl('h2', { text: 'Create MOC' });
-        this.add_embedding_location();
-        this.add_source_notes_location();
-        new Setting(containerEl)
-            .setName('Similar threshold for moc')
-            .setDesc('')
-            .addText((text) =>
-                text
-                    .setValue(`${commandOption.similar_threshold}`)
-                    .onChange((value) => {
-                        commandOption.similar_threshold = Number(value);
-                        this.plugin.saveSettings();
-                    })
-            )
+        customChatRoleEl.descEl.createSpan({ text: 'Custom system message to LLM.' });
     }
 
-    add_generated_notes_location(): void {
-        new Setting(this.containerEl)
-            .setName("Generated notes folder")
-            .setDesc("Generated notes folder.")
+    updatePromptTemplateBasedOnUseRef(): void {
+        const commandOption = this.plugin.settings.commandOption;
+        if (commandOption.useRef) {
+            if (commandOption.prompt_template === DEFAULT_PROMPT_TEMPLATE_WO_REF) {
+                commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE;
+            }
+        } else {
+            if (commandOption.prompt_template === DEFAULT_PROMPT_TEMPLATE) {
+                commandOption.prompt_template = DEFAULT_PROMPT_TEMPLATE_WO_REF;
+            }
+        }
+    }
+
+    updateCustomPrompt(value: string): void {
+        this.plugin.settings.commandOption.system_role = value;
+        this.plugin.saveSettings();
+    }
+
+    resetCustomPrompt(): void {
+        this.plugin.settings.commandOption.system_role = DEFAULT_CHAT_ROLE;
+        this.plugin.saveSettings();
+        this.display();
+    }
+
+    createMOCSettings(containerEl: HTMLElement): void {
+        containerEl.createEl('h2', { text: 'Create MOC' });
+        this.addEmbeddingLocation(containerEl);
+        this.addSourceNotesLocation(containerEl);
+        this.addSimilarThresholdSetting(containerEl);
+    }
+
+    addEmbeddingLocation(containerEl: HTMLElement): void {
+        new Setting(containerEl)
+            .setName("Embedding files folder")
+            .setDesc("Embedding files folder.")
             .addSearch((cb) => {
                 new FolderSuggest(cb.inputEl);
-                cb.setPlaceholder("Example: folder1/folder2")
-                    .setValue(this.plugin.settings.commandOption.generated_notes_location)
+                cb.setValue(this.plugin.settings.commandOption.embedding_location)
                     .onChange((new_folder) => {
-                        this.plugin.settings.commandOption.generated_notes_location = new_folder;
+                        this.plugin.settings.commandOption.embedding_location = new_folder;
                         this.plugin.saveSettingsInstant();
                     });
                 // @ts-ignore
@@ -207,35 +237,32 @@ export class InsightASettingTab extends PluginSettingTab {
             });
     }
 
-    add_embedding_location():void{
-        new Setting(this.containerEl)
-        .setName("Embedding files folder")
-        .setDesc("Embedding files folder.")
-        .addSearch((cb) => {
-            new FolderSuggest(cb.inputEl);
-            cb.setValue(this.plugin.settings.commandOption.embedding_location)
-                .onChange((new_folder) => {
-                    this.plugin.settings.commandOption.embedding_location = new_folder;
-                    this.plugin.saveSettingsInstant();
-                });
-            // @ts-ignore
-            cb.containerEl.addClass("templater_search");
-        });
+    addSourceNotesLocation(containerEl: HTMLElement): void {
+        new Setting(containerEl)
+            .setName("Source notes folder")
+            .setDesc("Source notes folder.")
+            .addSearch((cb) => {
+                new FolderSuggest(cb.inputEl);
+                cb.setValue(this.plugin.settings.commandOption.source_notes_location)
+                    .onChange((new_folder) => {
+                        this.plugin.settings.commandOption.source_notes_location = new_folder;
+                        this.plugin.saveSettingsInstant();
+                    });
+                // @ts-ignore
+                cb.containerEl.addClass("templater_search");
+            });
     }
 
-    add_source_notes_location():void{
-        new Setting(this.containerEl)
-        .setName("Source notes folder")
-        .setDesc("Source notes folder.")
-        .addSearch((cb) => {
-            new FolderSuggest(cb.inputEl);
-            cb.setValue(this.plugin.settings.commandOption.source_notes_location)
-                .onChange((new_folder) => {
-                    this.plugin.settings.commandOption.source_notes_location = new_folder;
-                    this.plugin.saveSettingsInstant();
-                });
-            // @ts-ignore
-            cb.containerEl.addClass("templater_search");
-        });
+    addSimilarThresholdSetting(containerEl: HTMLElement): void {
+        new Setting(containerEl)
+            .setName('Similar threshold for moc')
+            .addText((text) =>
+                text
+                    .setValue(`${this.plugin.settings.commandOption.similar_threshold}`)
+                    .onChange((value) => {
+                        this.plugin.settings.commandOption.similar_threshold = Number(value);
+                        this.plugin.saveSettings();
+                    })
+            );
     }
 }
