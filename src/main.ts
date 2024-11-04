@@ -78,7 +78,7 @@ export default class InsightAPlugin extends Plugin {
 			return;
 		}
 
-		const filename = await this.viewManager.getTitle();
+		const filename = await this.viewManager.getTitle() ?? "Untitled";
 		const userPrompt = this.formatUserPrompt(input);
 		const systemPrompt = this.formatSystemPrompt();
 
@@ -115,12 +115,12 @@ export default class InsightAPlugin extends Plugin {
 	}
 
 	private formatSystemPrompt(): string {
-		const { system_role, notes_quantity, tags_quantity, language_option, specific_language, additional_properties } = this.settings.commandOption;
+		const { system_role, notes_quantity, tags_quantity, language_option, specific_language, properties } = this.settings.commandOption;
 		return system_role
 			.replace(/{{number_of_notes}}/g, notes_quantity.toString())
 			.replace(/{{number_of_tags}}/g, tags_quantity.toString())
 			.replace(/{{language}}/g, language_option === 'specific' ? specific_language : language_option)
-			.replace(/{{additional_properties}}/g, additional_properties);
+			.replace(/{{properties}}/g, properties);
 	}
 
 	private async getNotesFromApi(systemPrompt: string, userPrompt: string): Promise<any[]> {

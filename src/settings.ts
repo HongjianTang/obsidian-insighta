@@ -19,7 +19,7 @@ export interface CommandOption {
     tags_quantity: string;
     language_option: string;
     specific_language: string;
-    additional_properties: string;
+    properties: string;
 }
 
 export class InsightASettings {
@@ -43,7 +43,7 @@ export const DEFAULT_SETTINGS: InsightASettings = {
         tags_quantity: "2-3",
         language_option: "same",
         specific_language: "",
-        additional_properties: "",
+        properties: "",
     },
 };
 
@@ -348,9 +348,9 @@ export class InsightASettingTab extends PluginSettingTab {
             .addText((text) =>
                 text
                     .setPlaceholder('e.g., aliases, description, next, prev')
-                    .setValue(commandOption.additional_properties)
+                    .setValue(commandOption.properties)
                     .onChange(async (value) => {
-                        commandOption.additional_properties = value;
+                        commandOption.properties = value;
                         await this.plugin.saveSettings();
                     })
             );
