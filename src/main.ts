@@ -107,20 +107,22 @@ export default class InsightAPlugin extends Plugin {
 		console.log(`prompt template: ${DEFAULT_PROMPT_TEMPLATE}`)
 		let user_prompt = DEFAULT_PROMPT_TEMPLATE;
 		user_prompt = user_prompt.replace('{{input}}', input);
-		const system_role = this.settings.commandOption.system_role;
+		const system_prompt = this.settings.commandOption.system_role;
 
 		const number_of_notes = this.settings.commandOption.notes_quantity;
 		const number_of_tags = this.settings.commandOption.tags_quantity;
 		const language_option = this.settings.commandOption.language_option;
 		const specific_language = this.settings.commandOption.specific_language;
+		const additional_properties = this.settings.commandOption.additional_properties;
 
-		const updatedChatRole = system_role
-		.replace(/{{number_of_notes}}/g, number_of_notes.toString())
-		.replace(/{{number_of_tags}}/g, number_of_tags.toString())
-		.replace(/{{language}}/g, language_option === 'specific' ? specific_language : language_option);
+		const updatedSystemPrompt = system_prompt
+		  .replace(/{{number_of_notes}}/g, number_of_notes.toString())
+		  .replace(/{{number_of_tags}}/g, number_of_tags.toString())
+		  .replace(/{{language}}/g, language_option === 'specific' ? specific_language : language_option)
+		  .replace(/{{additional_properties}}/g, additional_properties);
 
 		// Call API
-		let noteJsonString = await ChatGPT.callAPI(updatedChatRole, user_prompt, this.settings.commandOption.llm_model);
+		let noteJsonString = await ChatGPT.callAPI(updatedSystemPrompt, user_prompt, this.settings.commandOption.llm_model);
 		noteJsonString = noteJsonString.replace(/```json/g, "");
 		noteJsonString = noteJsonString.replace(/```/g, "");
 		noteJsonString = this.convertToJsonArray(noteJsonString);	
