@@ -1,5 +1,7 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import {ChatGPT} from 'src/api';
-import {App} from "obsidian";
+import {App, Notice, Setting} from "obsidian";
 import {ViewManager} from "src/view-manager";
 import {InsightASettings} from "src/settings";
 
@@ -16,7 +18,10 @@ export class Embed {
 
 	async embedText(text: string): Promise<number[]> {
 		try {
-			return await ChatGPT.createEmbedding(text);
+			const response = await ChatGPT.createEmbedding(text);
+			console.log(`Embedding ${text} with result: ${response}`);
+			// new Notice(JSON.stringify(response));
+			return response;
 		} catch (error) {
 			console.error("Error in embedding text:", error);
 			return [];
@@ -33,7 +38,7 @@ export class Embed {
 				const fileExist = await this.app.vault.adapter.exists(embeddingFilePath);
 				if (!fileExist) {
 					console.log(`Embed new file: ${file.basename}`);
-					const title = file.basename.replace('.md', '');
+					const title = file.basename;
 					const content = await this.app.vault.read(file);
 					const embedding_text = title + content;
 					const embedding = await this.embedText(embedding_text);
@@ -70,6 +75,7 @@ export class Embed {
 
 		// Call API
 		let returnString = await ChatGPT.callAPI(system_role, user_prompt, this.setting.commandOption.llm_model);
+		console.log(returnString);
 		await this.viewManager.insertContentAtTop(returnString);
 	}
 
