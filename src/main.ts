@@ -1,5 +1,6 @@
 import { Plugin, Notice } from "obsidian";
 import { InsightASettingTab, InsightASettings, DEFAULT_SETTINGS} from "src/settings";
+import { DEFAULT_PROMPT_TEMPLATE } from 'src/template'
 import { ViewManager } from "src/view-manager";
 import { ChatGPT } from 'src/api';
 import { Embed } from 'src/embed';
@@ -103,7 +104,8 @@ export default class InsightAPlugin extends Plugin {
 
 		// ------- [LLM Processing] -------
 		// format prompt
-		let user_prompt = this.settings.commandOption.prompt_template;
+		console.log(`prompt template: ${DEFAULT_PROMPT_TEMPLATE}`)
+		let user_prompt = DEFAULT_PROMPT_TEMPLATE;
 		user_prompt = user_prompt.replace('{{input}}', input);
 		const system_role = this.settings.commandOption.system_role;
 
