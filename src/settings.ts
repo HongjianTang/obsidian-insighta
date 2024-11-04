@@ -70,8 +70,8 @@ export class InsightASettingTab extends PluginSettingTab {
 
     createLLMSettings(containerEl: HTMLElement): void {
         containerEl.createEl('h2', { text: 'LLM' });
-        this.createAPIKeySetting(containerEl);
         this.createLLMModelSetting(containerEl);
+        this.createAPIKeySetting(containerEl);
     }
 
     createAPIKeySetting(containerEl: HTMLElement): void {
