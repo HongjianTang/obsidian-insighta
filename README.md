@@ -7,6 +7,8 @@
 
 InsightA uses AI to transform long articles into concise, atomic notes and generates organized Maps of Content (MOC). Ideal for structuring complex information inspired by the Zettelkasten method. 🚀📝
 
+![napkin-selection (1)](https://github.com/user-attachments/assets/7f4100ed-4db9-4221-8a6b-e6114455461c)
+
 ## Features ✨
 
 - **AI-Powered Notes**: Breaks down articles into linked, atomic notes.
