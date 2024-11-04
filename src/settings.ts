@@ -30,7 +30,7 @@ export const DEFAULT_SETTINGS: InsightASettings = {
         system_role: DEFAULT_CHAT_ROLE,
         prompt_template: DEFAULT_PROMPT_TEMPLATE,
         generated_notes_location: "Atomic Notes",
-        llm_model: "gpt-3.5-turbo",
+        llm_model: "gpt-4o-mini",
         embedding_location: "Embeddings/",
         source_notes_location: "Cards/",
         similar_threshold: 0.76,
@@ -115,7 +115,7 @@ export class InsightASettingTab extends PluginSettingTab {
         const availableModels = [
             { value: 'gpt-4o-mini', label: 'gpt-4o-mini' },
             { value: 'gpt-4', label: 'gpt-4' },
-            { value: 'glm-4-air', label: 'glm-4-air' },
+            { value: 'glm-4-flash', label: 'glm-4-flash' },
             { value: 'llama-2', label: 'llama-2' },
         ];
 
